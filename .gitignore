@@ -1,0 +1,7 @@
+target
+tmp*
+.DS_Store
+debug.txt
+*.sublime-workspace
+thread_profile.json
+.gdb_history

@@ -1,0 +1,36 @@
+#![enable(implicit_some)]
+Prefab (
+  entities: [
+    (data: (
+        transform: (translation: (x: 0.0, y: 20.0, z: 0.0)),
+        light: (light: Point((intensity: 1000.0, color: (1.0, 1.0, 1.0, 1.0), radius: 2.0))),
+    )),
+    (data: (
+        light: (ambient_color: ((0.5, 0.5, 0.5, 1.0))),
+    )),
+    (data: (
+      transform: (
+        rotation:
+
+        //This rotation is for an isometric view (i.e. looking directly at the origin from 10,10,10)
+        //(s: 0.8804762392171492, v: (x: -0.2798481423331214, y: 0.36470519963100084, z: 0.11591689595929516)),
+        //translation: (x: 10.0, y: 10.0, z: 10.0),
+
+        //This is -60deg on x
+        //(s:0.8660254, v:(x:-0.5, y:0.0, z:0.0)),
+        //translation: (x: 0.0, y: 8.0, z: 4.0),
+
+        //This is facing the xy plane
+        (s: 1.0, v: (x: 0.0, y: 0.0, z: 0.0)),
+        translation: (x: 64.0, y: 512.0, z: 1024.0),
+      ),
+      camera: Perspective((
+        fovy: Rad (1.0471975512),
+        aspect: 1.66,
+        near: 0.1,
+        far: 2000.0,
+      )),
+      control_tag: (),
+    )),
+  ],
+)

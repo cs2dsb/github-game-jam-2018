@@ -1,0 +1,26 @@
+[package]
+name = "ghgj18"
+version = "0.0.1"
+authors = []
+
+[dependencies]
+fern = { version = "0.5", features = ["colored"] }
+log = { version = "0.4", features = ["serde"] }
+chrono = "0.4"
+rand = "0.5"
+serde = "1.0"
+serde_derive = "1.0"
+nalgebra = "0.16"
+ncollide2d = "0.17"
+nphysics2d = "0.9"
+random_color = "0.4"
+
+[dependencies.amethyst]
+git = "https://github.com/amethyst/amethyst"
+#path = "../amethyst"
+
+[features]
+default = []
+nightly = [
+  "amethyst/nightly",
+]
