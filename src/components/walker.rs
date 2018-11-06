@@ -1,7 +1,8 @@
 #[derive(Debug, Clone)]
 pub enum Direction {
   Right,
-  Left,
+  #[allow(dead_code)]
+  Left, //Maybe they always walk right to avoid detecting turn conditions? Like an infinite runner?
 }
 
 impl Default for Direction {

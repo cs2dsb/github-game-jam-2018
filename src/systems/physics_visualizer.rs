@@ -46,6 +46,7 @@ use ::{
 const Z_SIZE: f32 = 10.0;
 const Z_POS: f32 = 20.0;
 
+#[derive(Default)]
 pub struct PhysicsVisualizer;
 
 impl<'s> System<'s> for PhysicsVisualizer {

@@ -8,6 +8,7 @@ use amethyst::{
 
 use ::components::BasicVelocity as BasicVelocityComponent;
 
+#[derive(Default)]
 pub struct BasicVelocity;
 
 impl<'s> System<'s> for BasicVelocity {

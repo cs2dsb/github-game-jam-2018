@@ -142,6 +142,30 @@ impl RunningState {
            .expect("Failed to insert Matriarch");
       info!("Initial Matriarch: {:?}", matriarch);
     }
+
+
+    let mut prev = None;
+    for i in 1..=10 {
+      let collider = {
+        let mut physics_world = world.write_resource::<PhysicsWorld>();
+        physics_world.create_rigid_body_with_box_collider(
+          &Vector2::new(50.0 * (i as f32), 150.0),
+          &Vector2::new(20.0, 20.0),
+          0.0)
+      };
+      prev = Some(world.create_entity()
+                       .with(Family { next: prev })
+                       .with(Walker::default())
+                       .with(collider)
+                       .build());
+    }
+
+    if let Some(matriarch) = prev {
+      world.write_storage::<Matriarch>()
+           .insert(matriarch, Matriarch)
+           .expect("Failed to insert Matriarch");
+      info!("Initial Matriarch: {:?}", matriarch);
+    }
   }
 
   fn test_physics(&self, world: &mut World) {
@@ -154,19 +178,20 @@ impl RunningState {
         0.0);
 
       let c1 = physics_world.create_ground_box_collider(
+        &Vector2::new(1000.0, 100.0),
+        &Vector2::new(2000.0, 50.0),
+        0.0);
+
+      let c2 = physics_world.create_ground_box_collider(
         &Vector2::new(800.0, 400.0),
         &Vector2::new(600.0, 50.0),
         30.0 * PI / 180.0);
 
-      let c2 = physics_world.create_ground_box_collider(
+      let c3 = physics_world.create_ground_box_collider(
         &Vector2::new(300.0, 700.0),
         &Vector2::new(600.0, 50.0),
         -30.0 * PI / 180.0);
 
-      let c3 = physics_world.create_ground_box_collider(
-        &Vector2::new(800.0, 1000.0),
-        &Vector2::new(600.0, 50.0),
-        30.0 * PI / 180.0);
 
       (c0, c1, c2, c3)
     };

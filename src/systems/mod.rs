@@ -14,6 +14,7 @@ mod physics_step;
 mod physics_visualizer;
 mod family;
 mod walker;
+mod player_input;
 
 pub use self::basic_velocity::*;
 pub use self::bundle::*;
@@ -23,6 +24,7 @@ pub use self::physics_step::*;
 pub use self::physics_visualizer::*;
 pub use self::family::*;
 pub use self::walker::*;
+pub use self::player_input::*;
 
 //Not exactly sure how to structure this
 //Want the function in systems so things like TransformBundle dependencies on my systems

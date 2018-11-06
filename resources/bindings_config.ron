@@ -5,6 +5,8 @@
     "move_z": Emulated(pos: Key(S), neg: Key(W)),
     "move_y": Emulated(pos: Key(Space), neg: Key(LControl)),
   },
-  actions: {},
+  actions: {
+    "one": [[Key(Key1)],[Key(Numpad1)]],
+  },
 )
 

@@ -22,6 +22,7 @@ impl Default for PeriodicLogTimer {
   }
 }
 
+#[derive(Default)]
 pub struct LogFps;
 
 impl<'a> System<'a> for LogFps {

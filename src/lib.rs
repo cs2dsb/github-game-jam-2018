@@ -107,6 +107,7 @@ pub fn run() -> Result<(), amethyst::Error> {
   let mut game = Application::build(assets_path, LoadingState::default())?
     .with_resource(game_config.pawn)
     .with_resource(game_config.physics)
+    .with_resource(game_config.camera)
     .build(game_data)?;
   game.run();
   Ok(())
