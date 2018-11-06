@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::HashMap;
 
 use amethyst::{
   core::{
@@ -6,6 +6,12 @@ use amethyst::{
     timing::Time,
   },
   ecs::prelude::*,
+};
+
+use ncollide2d::events::ContactEvent;
+use nphysics2d::object::{
+  BodyHandle,
+  ColliderHandle,
 };
 
 use ::{
@@ -20,7 +26,9 @@ pub struct PhysicsStep {
   inserted_reader_id: Option<ReaderId<InsertedFlag>>,
   removed_reader_id: Option<ReaderId<RemovedFlag>>,
   //Keeps a copy of all colliders so they can be deleted when a remove event is received
-  collider_cache: BTreeMap<usize, Collider>,
+  collider_cache: HashMap<usize, Collider>,
+  collider_body_map: HashMap<ColliderHandle, BodyHandle>,
+  collider_contacts: HashMap<ColliderHandle, Vec<ColliderHandle>>,
 }
 
 impl<'s> System<'s> for PhysicsStep {
@@ -52,11 +60,25 @@ impl<'s> System<'s> for PhysicsStep {
         panic!("Collider created with the same index as an existing collider");
       }
       self.collider_cache.insert(index, c.clone());
+      self.collider_body_map.insert(c.collider_handle, c.body_handle);
       info!("Collider was inserted: {:?}", index);
     }
 
     self.dirty.clear();
     colliders.populate_removed(&mut self.removed_reader_id.as_mut().unwrap(), &mut self.dirty);
+
+    fn remove_contact(map: &mut HashMap<ColliderHandle, Vec<ColliderHandle>>, c1: &ColliderHandle, c2: &ColliderHandle) {
+      let mut remove = false;
+      if let Some(list) = map.get_mut(c1) {
+        list.retain(|c| c != c2);
+        if list.len() == 0 {
+          remove = true;
+        }
+      }
+      if remove {
+        map.remove(c1);
+      }
+    }
 
     for (index) in (&self.dirty).join() {
       let index = index as usize;
@@ -68,6 +90,18 @@ impl<'s> System<'s> for PhysicsStep {
             break;
           }
         }
+        //Wake up any things this is touching before destroying it
+        if let Some(contacts) = self.collider_contacts.remove(&collider.collider_handle) {
+          for c in contacts {
+            physics_world.world.activate_body(
+              *self.collider_body_map.get(&c).expect("Collider missing from body map"));
+
+            //I thought you'd get Stopped events after the deletion but you don't
+            remove_contact(&mut self.collider_contacts, &c, &collider.collider_handle);
+          }
+        }
+        self.collider_body_map.remove(&collider.collider_handle);
+        self.collider_contacts.remove(&collider.collider_handle);
         physics_world.destroy_collider(collider, !found);
         info!("Collider was deleted: {:?}", index);
       } else {
@@ -75,9 +109,28 @@ impl<'s> System<'s> for PhysicsStep {
       }
     }
 
-
     let delta = time.delta_seconds();
     physics_world.step(delta);
+
+    fn add_contact(map: &mut HashMap<ColliderHandle, Vec<ColliderHandle>>, c1: &ColliderHandle, c2: &ColliderHandle) {
+      map
+        .entry(*c1)
+        .or_insert(Vec::new())
+        .push(*c2)
+    }
+
+    for c in physics_world.world.contact_events() {
+      match c {
+        ContactEvent::Started(c1, c2) => {
+          add_contact(&mut self.collider_contacts, c1, c2);
+          add_contact(&mut self.collider_contacts, c2, c1);
+        },
+        ContactEvent::Stopped(c1, c2) => {
+          remove_contact(&mut self.collider_contacts, c1, c2);
+          remove_contact(&mut self.collider_contacts, c2, c1);
+        },
+      }
+    }
 
     //for (transform, velocity) in (&mut transforms, &basic_velocities).join() {
     //  transform.translation += velocity.velocity * delta;

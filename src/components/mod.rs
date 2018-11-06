@@ -12,10 +12,12 @@ use amethyst::{
 mod basic_velocity;
 mod physics;
 mod family;
+mod walker;
 
 pub use self::basic_velocity::BasicVelocity;
 pub use self::physics::*;
 pub use self::family::*;
+pub use self::walker::*;
 
 //TODO: I've just used BTreeStorage for all of these as the specs book suggests it's ok as a general default.
 //  Think about using more appropriate storages at some point.
@@ -33,4 +35,8 @@ impl Component for Family {
 
 impl Component for Matriarch {
   type Storage = NullStorage<Self>;
+}
+
+impl Component for Walker {
+  type Storage = BTreeStorage<Self>;
 }

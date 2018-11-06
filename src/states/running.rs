@@ -37,6 +37,7 @@ use ::{
   components::{
     Family,
     Matriarch,
+    Walker,
   },
 };
 
@@ -123,13 +124,14 @@ impl RunningState {
     for i in 1..=10 {
       let collider = {
         let mut physics_world = world.write_resource::<PhysicsWorld>();
-        physics_world.create_ground_box_collider(
+        physics_world.create_rigid_body_with_box_collider(
           &Vector2::new(50.0 * (i as f32), 50.0),
           &Vector2::new(20.0, 20.0),
           0.0)
       };
       prev = Some(world.create_entity()
                        .with(Family { next: prev })
+                       .with(Walker::default())
                        .with(collider)
                        .build());
     }
@@ -143,43 +145,36 @@ impl RunningState {
   }
 
   fn test_physics(&self, world: &mut World) {
-    let (c0, c1, c2, c3, c4) = {
+    let (c0, c1, c2, c3) = {
       let mut physics_world = world.write_resource::<PhysicsWorld>();
 
       let c0 = physics_world.create_ground_box_collider(
-        &Vector2::new(500.0, 0.0),
-        &Vector2::new(1000.0, 50.0),
+        &Vector2::new(1000.0, 0.0),
+        &Vector2::new(2000.0, 50.0),
         0.0);
 
       let c1 = physics_world.create_ground_box_collider(
-        &Vector2::new(300.0, 100.0),
-        &Vector2::new(600.0, 50.0),
-        -30.0 * PI / 180.0);
-
-      let c2 = physics_world.create_ground_box_collider(
         &Vector2::new(800.0, 400.0),
         &Vector2::new(600.0, 50.0),
         30.0 * PI / 180.0);
 
-      let c3 = physics_world.create_ground_box_collider(
+      let c2 = physics_world.create_ground_box_collider(
         &Vector2::new(300.0, 700.0),
         &Vector2::new(600.0, 50.0),
         -30.0 * PI / 180.0);
 
-      let c4 = physics_world.create_ground_box_collider(
+      let c3 = physics_world.create_ground_box_collider(
         &Vector2::new(800.0, 1000.0),
         &Vector2::new(600.0, 50.0),
         30.0 * PI / 180.0);
 
-      (c0, c1, c2, c3, c4)
+      (c0, c1, c2, c3)
     };
 
     world.create_entity().with(c0).build();
     world.create_entity().with(c1).build();
     world.create_entity().with(c2).build();
     world.create_entity().with(c3).build();
-    world.create_entity().with(c4).build();
-
 
     for i in 1..10 {
       //Collider attached to dynamic body
