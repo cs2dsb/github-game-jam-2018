@@ -6,5 +6,5 @@
   fullscreen: false,
   multisampling: 4,
   visibility: true,
-  vsync: false,
+  vsync: true,
 )

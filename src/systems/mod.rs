@@ -9,16 +9,18 @@ use amethyst::{
 mod basic_velocity;
 mod bundle;
 mod log_fps;
-mod pawn_movement;
+mod camera_movement;
 mod physics_step;
 mod physics_visualizer;
+mod family;
 
 pub use self::basic_velocity::*;
 pub use self::bundle::*;
 pub use self::log_fps::*;
-pub use self::pawn_movement::*;
+pub use self::camera_movement::*;
 pub use self::physics_step::*;
 pub use self::physics_visualizer::*;
+pub use self::family::*;
 
 //Not exactly sure how to structure this
 //Want the function in systems so things like TransformBundle dependencies on my systems

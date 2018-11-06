@@ -115,7 +115,10 @@ impl PhysicsWorld {
   }
 
   #[allow(dead_code)]
-  pub fn destroy_collider(&mut self, collider: Collider) {
+  pub fn destroy_collider(&mut self, collider: Collider, destroy_body_too: bool) {
     self.world.remove_colliders(&[collider.collider_handle]);
+    if destroy_body_too {
+      self.world.remove_bodies(&[collider.body_handle]);
+    }
   }
 }

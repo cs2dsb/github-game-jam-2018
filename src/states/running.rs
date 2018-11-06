@@ -34,6 +34,10 @@ use ::{
   resources::{
     PhysicsWorld,
   },
+  components::{
+    Family,
+    Matriarch,
+  },
 };
 
 
@@ -54,6 +58,7 @@ impl<'a, 'b> SimpleState<'a, 'b> for RunningState {
     self.initialise_ui(world);
 
     self.test_physics(world);
+    self.test_family(world);
   }
   fn handle_event(&mut self, _data: StateData<GameData>, event: StateEvent) -> SimpleTrans<'a, 'b> {
     match &event {
@@ -113,9 +118,38 @@ impl RunningState {
       .build();
   }
 
+  fn test_family(&self, world: &mut World) {
+    let mut prev = None;
+    for i in 1..=10 {
+      let collider = {
+        let mut physics_world = world.write_resource::<PhysicsWorld>();
+        physics_world.create_ground_box_collider(
+          &Vector2::new(50.0 * (i as f32), 50.0),
+          &Vector2::new(20.0, 20.0),
+          0.0)
+      };
+      prev = Some(world.create_entity()
+                       .with(Family { next: prev })
+                       .with(collider)
+                       .build());
+    }
+
+    if let Some(matriarch) = prev {
+      world.write_storage::<Matriarch>()
+           .insert(matriarch, Matriarch)
+           .expect("Failed to insert Matriarch");
+      info!("Initial Matriarch: {:?}", matriarch);
+    }
+  }
+
   fn test_physics(&self, world: &mut World) {
-    let (c1, c2, c3, c4) = {
+    let (c0, c1, c2, c3, c4) = {
       let mut physics_world = world.write_resource::<PhysicsWorld>();
+
+      let c0 = physics_world.create_ground_box_collider(
+        &Vector2::new(500.0, 0.0),
+        &Vector2::new(1000.0, 50.0),
+        0.0);
 
       let c1 = physics_world.create_ground_box_collider(
         &Vector2::new(300.0, 100.0),
@@ -137,9 +171,10 @@ impl RunningState {
         &Vector2::new(600.0, 50.0),
         30.0 * PI / 180.0);
 
-      (c1, c2, c3, c4)
+      (c0, c1, c2, c3, c4)
     };
 
+    world.create_entity().with(c0).build();
     world.create_entity().with(c1).build();
     world.create_entity().with(c2).build();
     world.create_entity().with(c3).build();

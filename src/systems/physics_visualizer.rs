@@ -44,6 +44,7 @@ use ::{
 };
 
 const Z_SIZE: f32 = 10.0;
+const Z_POS: f32 = 20.0;
 
 pub struct PhysicsVisualizer;
 
@@ -142,6 +143,7 @@ fn update_transform(transform: &mut Transform, isometry: &Isometry2<f32>) {
   let point = naPoint2::from(isometry.translation.vector);
   transform.translation.x = point.x * SCALE_PIXELS_PER_METER;
   transform.translation.y = point.y * SCALE_PIXELS_PER_METER;
+  transform.translation.z = Z_POS;
   transform.rotation = Quaternion::from(Euler {
     x: Rad(0.0),
     y: Rad(0.0),

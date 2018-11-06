@@ -3,15 +3,19 @@ use amethyst::{
     Component,
     storage::{
       BTreeStorage,
+      NullStorage,
+      FlaggedStorage,
     },
   },
 };
 
 mod basic_velocity;
 mod physics;
+mod family;
 
 pub use self::basic_velocity::BasicVelocity;
 pub use self::physics::*;
+pub use self::family::*;
 
 //TODO: I've just used BTreeStorage for all of these as the specs book suggests it's ok as a general default.
 //  Think about using more appropriate storages at some point.
@@ -20,5 +24,13 @@ impl Component for BasicVelocity {
 }
 
 impl Component for Collider {
+  type Storage = FlaggedStorage<Self, BTreeStorage<Self>>;
+}
+
+impl Component for Family {
   type Storage = BTreeStorage<Self>;
+}
+
+impl Component for Matriarch {
+  type Storage = NullStorage<Self>;
 }
