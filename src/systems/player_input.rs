@@ -43,6 +43,10 @@ impl<'s> System<'s> for PlayerInput {
             commands.single_write(Command::DropCube);
             commands.single_write(Command::KillMatriarch);
           },
+          "two" => {
+            commands.single_write(Command::DropLift);
+            commands.single_write(Command::KillMatriarch);
+          },
           _ => {},
         }
         self.down_actions.insert(action);

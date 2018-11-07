@@ -1,4 +1,6 @@
 target
+bundle
+bundle.zip
 tmp*
 .DS_Store
 debug.txt

@@ -12,6 +12,8 @@ use super::Murder;
 use super::Walker;
 use super::PlayerInput;
 use super::DropCube;
+use super::DropLift;
+use super::ShapeVisualizer;
 
 pub struct GameBundle;
 
@@ -21,6 +23,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameBundle {
       builder.add(BasicVelocity::default(), "basic_velocity_system", &[]);
       builder.add(CameraMovement::default(), "camera_movement_system", &[]);
       builder.add(PhysicsVisualizer::default(), "physics_visualizer_system", &[]);
+      builder.add(ShapeVisualizer::default(), "shape_visualizer_system", &[]);
       builder.add(Walker::default(), "walker_system", &[]);
       builder.add(PhysicsStep::default(), "physics_step_system", &["walker_system"]);
       builder.add(PlayerInput::default(), "player_input_system", &[]);
@@ -28,7 +31,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameBundle {
       //Murdering needs to happen last to make sure other commands are executed on the
       //matriarch before it's destroyed
       builder.add(DropCube::default(), "drop_cube_system", &["player_input_system"]);
-      builder.add(Murder::default(), "murder_system", &["player_input_system", "drop_cube_system"]);
+      builder.add(DropLift::default(), "drop_lift_system", &["player_input_system"]);
+      builder.add(Murder::default(), "murder_system", &["player_input_system", "drop_cube_system", "drop_lift_system"]);
 
       //NOTE: builder.print_par_seq was very useful in working out why dependencies seemed to be reversed
       // in the murder/drop_cube systems. What was really happening was:

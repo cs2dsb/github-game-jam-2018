@@ -25,7 +25,7 @@ use ::components::{
   Collider,
 };
 
-type FSize = f32;
+pub type FSize = f32;
 
 pub const SCALE_PIXELS_PER_METER: FSize = 64.0;
 pub const SCALE_METERS_PER_PIXEL: FSize = 1.0 / SCALE_PIXELS_PER_METER;
@@ -33,8 +33,12 @@ pub const SCALE_METERS_PER_PIXEL: FSize = 1.0 / SCALE_PIXELS_PER_METER;
 //Plucked from arse
 pub const MARGIN: FSize = 0.01 * SCALE_METERS_PER_PIXEL;
 
+const TIMESTEP: f32 = 1.0/60.0;
+
 pub struct PhysicsWorld {
   pub world: World<FSize>,
+  time_accumulator: f32,
+  timestep: f32,
 }
 
 impl Default for PhysicsWorld {
@@ -47,8 +51,11 @@ impl PhysicsWorld {
   fn new() -> Self {
     let mut s = Self {
       world: World::new(),
+      time_accumulator: 0.0,
+      timestep: 0.0,
     };
     s.set_gravity(-9.81);
+    s.set_fixed_timestep(TIMESTEP);
     s
   }
 
@@ -56,9 +63,17 @@ impl PhysicsWorld {
     self.world.set_gravity(Vector2::y() * gravity);
   }
 
-  pub fn step(&mut self, delta: FSize) {
-    self.world.set_timestep(delta);
-    self.world.step();
+  pub fn set_fixed_timestep(&mut self, timestep: f32) {
+    self.world.set_timestep(timestep);
+    self.timestep = timestep;
+  }
+
+  pub fn step(&mut self, delta: f32) {
+    self.time_accumulator += delta;
+    while self.time_accumulator >= self.timestep {
+      self.time_accumulator -= self.timestep;
+      self.world.step();
+    }
   }
 
   pub fn create_ground_box_collider(&mut self, pos: &CVector2<FSize>, size: &CVector2<FSize>, rotation: FSize) -> Collider {

@@ -22,11 +22,21 @@ Prefab (
 
         //This is facing the xy plane
         (s: 1.0, v: (x: 0.0, y: 0.0, z: 0.0)),
-        translation: (x: 0.0, y: 0.0, z: 400.0),
+        translation: (x: 500.0, y: 500.0, z: 1000.0),
       ),
+      /*
       camera: Perspective((
         fovy: Rad (1.0471975512),
         aspect: 1.66,
+        near: 0.1,
+        far: 2000.0,
+      )),
+      */
+      camera: Orthographic((
+        left: -166.0,
+        right: 166.0,
+        top: 100.0,
+        bottom: -100.0,
         near: 0.1,
         far: 2000.0,
       )),

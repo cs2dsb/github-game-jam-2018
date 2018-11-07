@@ -1,29 +1,16 @@
 ///Finds colliders without meshes and creates meshes for them
 
 use amethyst::{
-  assets::{
-    AssetStorage,
-    Loader,
-  },
   core::{
     transform::components::Transform,
     cgmath::{
-      Vector3,
       Quaternion,
       Euler,
       Rad,
     },
   },
   ecs::prelude::*,
-  renderer::{
-    Material,
-    MaterialDefaults,
-    Mesh,
-    MeshHandle,
-    PosNormTex,
-    Shape,
-    Texture,
-  },
+  renderer::Shape,
 };
 
 use ncollide2d::shape as ncshape;
@@ -31,11 +18,11 @@ use nalgebra::{
   Point2 as naPoint2,
   Isometry2,
 };
-use random_color::RandomColor;
 
 use ::{
   components::{
     Collider,
+    Shape as ShapeComponent,
   },
   resources::{
     PhysicsWorld,
@@ -54,55 +41,36 @@ impl<'s> System<'s> for PhysicsVisualizer {
     Entities<'s>,
     ReadStorage<'s, Collider>,
     WriteStorage<'s, Transform>,
+    ReadStorage<'s, ShapeComponent>,
     Read<'s, PhysicsWorld>,
     Read<'s, LazyUpdate>,
-    ReadExpect<'s, MaterialDefaults>,
-    ReadExpect<'s, Loader>,
-    ReadExpect<'s, AssetStorage<Texture>>,
-    ReadExpect<'s, AssetStorage<Mesh>>,
-    ReadStorage<'s, MeshHandle>,
   );
 
-  fn run(&mut self, (entities, colliders, mut transforms, physics_world, updater, material_defaults, loader, texture_storage, mesh_storage, meshes): Self::SystemData) {
-    //Create meshes for colliders that don't have them
-    for (entity, c, _) in (&entities, &colliders, !&meshes).join() {
+  fn run(&mut self, (entities, colliders, mut transforms, shapes, physics_world, updater): Self::SystemData) {
+    //Create shapes for colliders that don't have them
+    for (entity, c, _) in (&entities, &colliders, !&shapes).join() {
       let collider = physics_world
         .world
         .collider(c.collider_handle)
         .expect("Failed to resolve collider handle to collider");
 
-      //Material
-      let color = RandomColor::new().to_rgb_array();
-      let color = [
-        color[0] as f32 / 255.0,
-        color[1] as f32 / 255.0,
-        color[2] as f32 / 255.0,
-        1.0];
-      let material = create_colour_material(
-        &material_defaults,
-        &texture_storage,
-        &loader,
-        color,
-      );
-      updater.insert(entity, material);
-
-      //Mesh
-      let mesh = {
+      //Shape
+      let shape = {
         let shape = collider.shape().as_ref();
         let margin = collider.data().margin();
         if let Some(s) = shape.as_shape::<ncshape::Cuboid<f32>>() {
           let he = s.half_extents();
           let w = (he.x + margin) * SCALE_PIXELS_PER_METER;
           let h = (he.y + margin) * SCALE_PIXELS_PER_METER;
-          let size = Vector3::new(w, h, Z_SIZE);
-          let verts = Shape::Cube.generate_vertices::<Vec<PosNormTex>>(Some(size.into()));
-          let mesh = loader.load_from_data(verts.into(), (), &mesh_storage);
-          mesh
+          ShapeComponent {
+            shape: Shape::Cube,
+            scale: (w, h, Z_SIZE),
+          }
         } else {
           panic!("Unknown collider shape in PhysicsVisualizer");
         }
       };
-      updater.insert(entity, mesh);
+      updater.insert(entity, shape);
 
       //Transform
       let local_transform = {
@@ -122,20 +90,6 @@ impl<'s> System<'s> for PhysicsVisualizer {
 
       update_transform(transform, &collider.position());
     }
-  }
-}
-
-/// Creates a solid material of the specified colour.
-fn create_colour_material(
-  material_defaults: &MaterialDefaults,
-  texture_storage: &AssetStorage<Texture>,
-  loader: &Loader,
-  colour: [f32; 4]
-) -> Material {
-  let albedo = loader.load_from_data(colour.into(), (), texture_storage);
-  Material {
-    albedo,
-    ..material_defaults.0.clone()
   }
 }
 

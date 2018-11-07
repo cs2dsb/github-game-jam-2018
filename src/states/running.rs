@@ -30,6 +30,8 @@ use rand::random;
   winit::VirtualKeyCode,
 };
 
+use ncollide2d::world::CollisionGroups;
+
 use ::{
   resources::{
     PhysicsWorld,
@@ -122,13 +124,33 @@ impl RunningState {
   fn test_family(&self, world: &mut World) {
     let mut prev = None;
     for i in 1..=10 {
+      let mut collision_groups = CollisionGroups::new();
+      collision_groups.set_membership(&[1]);
+      collision_groups.set_whitelist(&[2]);
+
       let collider = {
         let mut physics_world = world.write_resource::<PhysicsWorld>();
-        physics_world.create_rigid_body_with_box_collider(
-          &Vector2::new(50.0 * (i as f32), 50.0),
-          &Vector2::new(20.0, 20.0),
-          0.0)
+        let collider = physics_world.create_rigid_body_with_box_collider(
+          &Vector2::new(15.0 * (i as f32), 25.0),
+          &Vector2::new(10.0, 10.0),
+          0.0);
+
+
+        info!("{:?}", physics_world
+          .world
+          .collider(collider.collider_handle)
+          .expect("")
+          .collision_groups());
+        physics_world
+          .world
+          .collision_world_mut()
+          .set_collision_groups(collider.collider_handle, collision_groups);
+
+
+
+        collider
       };
+
       prev = Some(world.create_entity()
                        .with(Family { next: prev })
                        .with(Walker::default())
@@ -144,6 +166,8 @@ impl RunningState {
     }
 
 
+    /*
+    Multiple families is sort of supported... as long as the matriarchs stay relatively close together
     let mut prev = None;
     for i in 1..=10 {
       let collider = {
@@ -166,32 +190,40 @@ impl RunningState {
            .expect("Failed to insert Matriarch");
       info!("Initial Matriarch: {:?}", matriarch);
     }
+    */
   }
 
   fn test_physics(&self, world: &mut World) {
     let (c0, c1, c2, c3) = {
       let mut physics_world = world.write_resource::<PhysicsWorld>();
 
+      let len = 1000.0;
+      let thickness = 10.0;
+
+
+      //Bottom
       let c0 = physics_world.create_ground_box_collider(
-        &Vector2::new(1000.0, 0.0),
-        &Vector2::new(2000.0, 50.0),
+        &Vector2::new(len/2.0, thickness/2.0), //Pos
+        &Vector2::new(len, thickness), //Size
         0.0);
 
+      //Top
       let c1 = physics_world.create_ground_box_collider(
-        &Vector2::new(1000.0, 100.0),
-        &Vector2::new(2000.0, 50.0),
+        &Vector2::new(len/2.0, len-thickness/2.0), //Pos
+        &Vector2::new(len, thickness), //Size
         0.0);
 
+      //Left
       let c2 = physics_world.create_ground_box_collider(
-        &Vector2::new(800.0, 400.0),
-        &Vector2::new(600.0, 50.0),
-        30.0 * PI / 180.0);
+        &Vector2::new(thickness/2.0, len/2.0), //Pos
+        &Vector2::new(thickness, len), //Size
+        0.0);
 
+      //Right
       let c3 = physics_world.create_ground_box_collider(
-        &Vector2::new(300.0, 700.0),
-        &Vector2::new(600.0, 50.0),
-        -30.0 * PI / 180.0);
-
+        &Vector2::new(len-thickness/2.0, len/2.0), //Pos
+        &Vector2::new(thickness, len), //Size
+        0.0);
 
       (c0, c1, c2, c3)
     };
