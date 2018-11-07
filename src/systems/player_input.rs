@@ -39,7 +39,10 @@ impl<'s> System<'s> for PlayerInput {
         self.down_actions.remove(&action);
       } else if pressed {
         match action.as_ref() {
-          "one" => commands.single_write(Command::KillMatriarch),
+          "one" => {
+            commands.single_write(Command::DropCube);
+            commands.single_write(Command::KillMatriarch);
+          },
           _ => {},
         }
         self.down_actions.insert(action);

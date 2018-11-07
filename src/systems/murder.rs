@@ -1,7 +1,4 @@
 use amethyst::{
-  core::{
-    timing::Time,
-  },
   ecs::prelude::*,
   shrev::ReaderId,
 };
@@ -18,23 +15,20 @@ use ::{
 };
 
 
-pub struct Family {
-  elapsed: f32,
+pub struct Murder {
   command_reader: Option<ReaderId<Command>>,
 }
 
-impl Default for Family {
+impl Default for Murder {
   fn default() -> Self {
     Self {
-      elapsed: 0.0,
       command_reader: None,
     }
   }
 }
 
-impl<'s> System<'s> for Family {
+impl<'s> System<'s> for Murder {
   type SystemData = (
-    Read<'s, Time>,
     Entities<'s>,
     ReadStorage<'s, FamilyComponent>,
     ReadStorage<'s, Matriarch>,
@@ -47,12 +41,9 @@ impl<'s> System<'s> for Family {
     self.command_reader = Some(res.fetch_mut::<CommandChannel>().register_reader());
   }
 
-  fn run(&mut self, (time, entities, family_components, matriarchs, updater, commands): Self::SystemData) {
-    self.elapsed += time.delta_seconds();
-
-    let mut murder = self.elapsed >= 5.0;
+  fn run(&mut self, (entities, family_components, matriarchs, updater, commands): Self::SystemData) {
+    let mut murder = false;
     for command in commands.read(self.command_reader.as_mut().unwrap()) {
-      #[allow(unreachable_patterns)]
       match command {
         Command::KillMatriarch => murder = true,
         _ => {},
@@ -60,7 +51,6 @@ impl<'s> System<'s> for Family {
     }
 
     if murder {
-      self.elapsed = 0.0;
       for (e, _) in (&entities, &matriarchs).join() {
         if entities.is_alive(e) {
           info!("Murdering Matriarch {:?}", e);
