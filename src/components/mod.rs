@@ -14,12 +14,14 @@ mod physics;
 mod family;
 mod walker;
 mod shape;
+mod spawner;
 
 pub use self::basic_velocity::BasicVelocity;
 pub use self::physics::*;
 pub use self::family::*;
 pub use self::walker::*;
 pub use self::shape::*;
+pub use self::spawner::*;
 
 //TODO: I've just used BTreeStorage for all of these as the specs book suggests it's ok as a general default.
 //  Think about using more appropriate storages at some point.
@@ -44,5 +46,9 @@ impl Component for Walker {
 }
 
 impl Component for Shape {
+  type Storage = BTreeStorage<Self>;
+}
+
+impl Component for Spawner {
   type Storage = BTreeStorage<Self>;
 }

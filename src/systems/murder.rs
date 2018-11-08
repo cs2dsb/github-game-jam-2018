@@ -62,7 +62,9 @@ impl<'s> System<'s> for Murder {
             info!("Promoted {:?} to Matriarch", next_matriarch);
             updater.insert(next_matriarch, Matriarch);
           }
-          entities.delete(e).expect("Failed to delete entity");
+          entities
+            .delete(e)
+            .expect("Failed to delete entity");
         }
       }
     }

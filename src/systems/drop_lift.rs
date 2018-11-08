@@ -67,6 +67,8 @@ impl LiftForce {
   }
 }
 
+//TODO: this doesn't work with entities spawned after it's created
+//fix is probably to create a component for each lift and update it's bodies list on spawn/etc
 impl ForceGenerator<FSize> for LiftForce {
   fn apply(&mut self, _: &IntegrationParameters<FSize>, bodies: &mut BodySet<FSize>) -> bool {
     //Remove any that have been destroyed
