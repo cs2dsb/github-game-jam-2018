@@ -36,6 +36,7 @@ use ::{
     Family,
     Collider,
     Shape as ShapeComponent,
+    ForceGenerator as ForceGeneratorComponent,
   },
   config::PhysicsConfig,
   resources::{
@@ -47,6 +48,7 @@ use ::{
   },
 };
 
+#[derive(Debug)]
 struct LiftForce {
   bodies: Vec<BodyHandle>, //Bodies affected by lift
   width: FSize, //How wide the lift is
@@ -67,8 +69,6 @@ impl LiftForce {
   }
 }
 
-//TODO: this doesn't work with entities spawned after it's created
-//fix is probably to create a component for each lift and update it's bodies list on spawn/etc
 impl ForceGenerator<FSize> for LiftForce {
   fn apply(&mut self, _: &IntegrationParameters<FSize>, bodies: &mut BodySet<FSize>) -> bool {
     //Remove any that have been destroyed
@@ -94,7 +94,11 @@ impl ForceGenerator<FSize> for LiftForce {
 
     // If `false` is returned, the physis world will remove
     // this force generator after this call.
-    self.bodies.len() > 0
+    //self.bodies.len() > 0
+
+    //There doesn't appear to be a way to check if a fg still exists in the world, the call
+    //to fetch it just panics if it's been deleted so best not let that happen automatically...
+    true
   }
 }
 
@@ -118,6 +122,7 @@ impl<'s> System<'s> for DropLift {
     ReadStorage<'s, Transform>,
     ReadStorage<'s, Family>,
     ReadStorage<'s, Collider>,
+    ReadStorage<'s, ForceGeneratorComponent>,
     Write<'s, PhysicsWorld>,
     Read<'s, PhysicsConfig>,
     Read<'s, LazyUpdate>,
@@ -128,7 +133,7 @@ impl<'s> System<'s> for DropLift {
     self.command_reader = Some(res.fetch_mut::<CommandChannel>().register_reader());
   }
 
-  fn run(&mut self, (entities, commands, matriarchs, transforms, family_components, colliders, mut physics_world, physics_config, updater): Self::SystemData) {
+  fn run(&mut self, (entities, commands, matriarchs, transforms, family_components, colliders, generators, mut physics_world, physics_config, updater): Self::SystemData) {
     let mut drop_lift = false;
     for command in commands.read(self.command_reader.as_mut().unwrap()) {
       match command {
@@ -155,7 +160,9 @@ impl<'s> System<'s> for DropLift {
             Force::new(naVector2::new(physics_config.lift_force.x, physics_config.lift_force.y), 0.0),
             bodies);
 
-          physics_world.world.add_force_generator(lift);
+          let fg = ForceGeneratorComponent {
+            force_generator_handle: physics_world.world.add_force_generator(lift),
+          };
 
           let shape = ShapeComponent {
             shape: Shape::Cone(10),
@@ -168,9 +175,23 @@ impl<'s> System<'s> for DropLift {
 
           updater
             .create_entity(&entities)
+            .with(fg)
             .with(shape)
             .with(transform)
             .build();
+        }
+      }
+    }
+
+    //TODO: Move this to it's own system or inside spawner system
+    //Update lifts
+    for g in (&generators).join() {
+      let mut fg = physics_world.world.force_generator_mut(g.force_generator_handle);
+      if let Ok(lift) = fg.downcast_mut::<LiftForce>() {
+        for (c, _) in (&colliders, &family_components).join() {
+          if !lift.bodies.contains(&c.body_handle) {
+            lift.bodies.push(c.body_handle);
+          }
         }
       }
     }

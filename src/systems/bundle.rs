@@ -33,10 +33,16 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameBundle {
       //matriarch before it's destroyed
       builder.add(DropCube::default(), "drop_cube_system", &["player_input_system"]);
       builder.add(DropLift::default(), "drop_lift_system", &["player_input_system"]);
-      builder.add(Murder::default(), "murder_system", &["player_input_system", "drop_cube_system", "drop_lift_system"]);
+      builder.add(Spawner::default(), "spawner_system", &[]);
+      //Depends on spawner_system so the spawner gets a chance to update the matriarch before it's potentially killed
+      //Otherwise the matriarch can be marked for removal but no other promoted because it's still alive until maintain is called
+      builder.add(Murder::default(), "murder_system", &[
+        "player_input_system",
+        "drop_cube_system",
+        "drop_lift_system",
+        "spawner_system",
+      ]);
 
-      //Depends on murder so if a matriarch is destroyed this frame it's gone before we spawn a new creep
-      builder.add(Spawner::default(), "spawner_system", &["murder_system"]);
 
       //NOTE: builder.print_par_seq was very useful in working out why dependencies seemed to be reversed
       // in the murder/drop_cube systems. What was really happening was:
