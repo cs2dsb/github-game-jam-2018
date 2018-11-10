@@ -1,8 +1,16 @@
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Direction {
   Right,
-  #[allow(dead_code)]
-  Left, //Maybe they always walk right to avoid detecting turn conditions? Like an infinite runner?
+  Left,
+}
+
+impl Direction {
+  pub fn reversed(&self) -> Self {
+    match self {
+      Direction::Right => Direction::Left,
+      Direction::Left => Direction::Right,
+    }
+  }
 }
 
 impl Default for Direction {
@@ -25,4 +33,10 @@ impl Default for Walker {
       direction: Default::default(),
     }
   }
+}
+
+///Component that changes a walkers direction when their physics bodies overlap
+#[derive(Debug, Clone)]
+pub struct ChangeDirection {
+  pub direction: Direction,
 }

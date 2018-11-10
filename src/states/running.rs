@@ -122,7 +122,7 @@ impl RunningState {
   fn test_spawner(&self, world: &mut World) {
     let spawner = Spawner::new(SpawnerParams {
       spawn_size: Vector2::new(10.0, 10.0),
-      spawn_max: 10,
+      spawn_max: 100,
       frequency: 2.0,
     });
     let mut spanwer_transform = Transform::default();

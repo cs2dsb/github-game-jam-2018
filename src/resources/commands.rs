@@ -4,6 +4,7 @@ use amethyst::shrev::EventChannel;
 pub enum Command {
   DropCube,
   DropLift,
+  DropDirectionChanger,
   KillMatriarch,
 }
 

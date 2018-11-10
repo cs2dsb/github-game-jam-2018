@@ -8,6 +8,7 @@
   actions: {
     "one": [[Key(Key1)],[Key(Numpad1)]],
     "two": [[Key(Key2)],[Key(Numpad2)]],
+    "three": [[Key(Key3)],[Key(Numpad3)]],
   },
 )
 

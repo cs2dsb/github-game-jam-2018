@@ -39,16 +39,13 @@ impl<'s> System<'s> for PlayerInput {
         self.down_actions.remove(&action);
       } else if pressed {
         match action.as_ref() {
-          "one" => {
-            commands.single_write(Command::DropCube);
-            commands.single_write(Command::KillMatriarch);
-          },
-          "two" => {
-            commands.single_write(Command::DropLift);
-            commands.single_write(Command::KillMatriarch);
-          },
+          "one" => commands.single_write(Command::DropCube),
+          "two" => commands.single_write(Command::DropLift),
+          "three" => commands.single_write(Command::DropDirectionChanger),
           _ => {},
         }
+        //All other actions also kill the matriach (for now)
+        commands.single_write(Command::KillMatriarch);
         self.down_actions.insert(action);
       }
     }

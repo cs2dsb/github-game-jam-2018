@@ -56,3 +56,7 @@ impl Component for Spawner {
 impl Component for ForceGenerator {
   type Storage = BTreeStorage<Self>;
 }
+
+impl Component for ChangeDirection {
+  type Storage = BTreeStorage<Self>;
+}

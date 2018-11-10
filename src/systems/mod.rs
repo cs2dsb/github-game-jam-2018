@@ -19,6 +19,7 @@ mod drop_cube;
 mod drop_lift;
 mod shape_visualizer;
 mod spawner;
+mod drop_direction_changer;
 
 pub use self::basic_velocity::*;
 pub use self::bundle::*;
@@ -33,6 +34,7 @@ pub use self::drop_cube::*;
 pub use self::drop_lift::*;
 pub use self::shape_visualizer::*;
 pub use self::spawner::*;
+pub use self::drop_direction_changer::*;
 
 //Not exactly sure how to structure this
 //Want the function in systems so things like TransformBundle dependencies on my systems

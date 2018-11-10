@@ -15,6 +15,7 @@ use super::DropCube;
 use super::DropLift;
 use super::ShapeVisualizer;
 use super::Spawner;
+use super::DropDirectionChanger;
 
 pub struct GameBundle;
 
@@ -33,6 +34,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameBundle {
       //matriarch before it's destroyed
       builder.add(DropCube::default(), "drop_cube_system", &["player_input_system"]);
       builder.add(DropLift::default(), "drop_lift_system", &["player_input_system"]);
+      builder.add(DropDirectionChanger::default(), "drop_direction_changer_system", &["player_input_system"]);
       builder.add(Spawner::default(), "spawner_system", &[]);
       //Depends on spawner_system so the spawner gets a chance to update the matriarch before it's potentially killed
       //Otherwise the matriarch can be marked for removal but no other promoted because it's still alive until maintain is called
@@ -41,6 +43,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameBundle {
         "drop_cube_system",
         "drop_lift_system",
         "spawner_system",
+        "drop_direction_changer_system",
       ]);
 
 

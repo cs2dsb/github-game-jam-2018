@@ -34,6 +34,8 @@ use ::{
   components::{
     Matriarch,
     Family,
+    Walker,
+    Direction,
     Collider,
     Shape as ShapeComponent,
     ForceGenerator as ForceGeneratorComponent,
@@ -121,6 +123,7 @@ impl<'s> System<'s> for DropLift {
     ReadStorage<'s, Matriarch>,
     ReadStorage<'s, Transform>,
     ReadStorage<'s, Family>,
+    ReadStorage<'s, Walker>,
     ReadStorage<'s, Collider>,
     ReadStorage<'s, ForceGeneratorComponent>,
     Write<'s, PhysicsWorld>,
@@ -133,7 +136,7 @@ impl<'s> System<'s> for DropLift {
     self.command_reader = Some(res.fetch_mut::<CommandChannel>().register_reader());
   }
 
-  fn run(&mut self, (entities, commands, matriarchs, transforms, family_components, colliders, generators, mut physics_world, physics_config, updater): Self::SystemData) {
+  fn run(&mut self, (entities, commands, matriarchs, transforms, family_components, walkers, colliders, generators, mut physics_world, physics_config, updater): Self::SystemData) {
     let mut drop_lift = false;
     for command in commands.read(self.command_reader.as_mut().unwrap()) {
       match command {
@@ -143,7 +146,7 @@ impl<'s> System<'s> for DropLift {
     }
 
     if drop_lift {
-      for (e, _, t) in (&entities, &matriarchs, &transforms).join() {
+      for (e, _, t, w) in (&entities, &matriarchs, &transforms, &walkers).join() {
         if entities.is_alive(e) {
           info!("Dropping lift on Matriarch {:?}", e);
 
@@ -153,11 +156,16 @@ impl<'s> System<'s> for DropLift {
             bodies.push(c.body_handle);
           }
 
+          let force_x = physics_config.lift_force.x * match w.direction {
+            Direction::Left => -1.0,
+            _ => 1.0,
+          };
+
           let lift = LiftForce::new(
             physics_config.lift_width * SCALE_METERS_PER_PIXEL,
             physics_config.lift_height * SCALE_METERS_PER_PIXEL,
             Point2::new(t.translation.x * SCALE_METERS_PER_PIXEL, t.translation.y * SCALE_METERS_PER_PIXEL),
-            Force::new(naVector2::new(physics_config.lift_force.x, physics_config.lift_force.y), 0.0),
+            Force::new(naVector2::new(force_x, physics_config.lift_force.y), 0.0),
             bodies);
 
           let fg = ForceGeneratorComponent {
