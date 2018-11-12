@@ -6,7 +6,7 @@
     gravity: -9.81,
     lift_width: 10.0,
     lift_height: 10.0,
-    lift_force: (x: 2.0, y: 6.0),
+    lift_force: (x: 0.0, y: 6.0),
     change_direction_width: 10.0,
     change_direction_height: 10.0,
   ),

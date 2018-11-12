@@ -76,6 +76,15 @@ impl PhysicsWorld {
     s
   }
 
+  /*We aim to do one timestep per frame and render one frame behind.
+    The amount of time left in the time_accumulator after a step represents how much
+    we overshot our timestep by and can be used to lerp between the n and n+1 frames.
+    This function gives that as a 0->1 value (>= 1 should be impossible).
+  */
+  pub fn get_alpha(&self) -> f32 {
+    self.time_accumulator / self.timestep
+  }
+
   pub fn register_entity(&mut self, entity: Entity, collider_handle: ColliderHandle) {
     debug!("Collider {:?} was associated with entity {:?}", collider_handle, entity);
     self.collider_entity_map.insert(collider_handle, entity);
@@ -164,11 +173,19 @@ impl PhysicsWorld {
     self.process_proximity();
   }
 
-  pub fn step(&mut self, delta: f32) {
+  ///Adds time to the physics world, doesn't perform any steps
+  pub fn add_time(&mut self, delta: f32) {
     self.time_accumulator += delta;
-    while self.time_accumulator >= self.timestep {
+  }
+
+  ///Steps the simulation if there is enough time in the accumulator
+  pub fn step(&mut self) -> bool {
+    if self.time_accumulator >= self.timestep {
       self.time_accumulator -= self.timestep;
       self.do_step();
+      true
+    } else {
+      false
     }
   }
 
@@ -195,10 +212,7 @@ impl PhysicsWorld {
     let body_handle = BodyHandle::ground();
     self.collider_body_map.insert(collider_handle, body_handle);
 
-    Collider {
-      body_handle: body_handle,
-      collider_handle: collider_handle,
-    }
+    Collider::new(body_handle, collider_handle)
   }
 
   pub fn create_ground_box_sensor(&mut self, pos: &CVector2<FSize>, size: &CVector2<FSize>, rotation: FSize) -> Collider {
@@ -222,10 +236,7 @@ impl PhysicsWorld {
     let body_handle = BodyHandle::ground();
     self.collider_body_map.insert(collider_handle, body_handle);
 
-    Collider {
-      body_handle: body_handle,
-      collider_handle: collider_handle,
-    }
+    Collider::new(body_handle, collider_handle)
   }
 
   pub fn create_rigid_body_with_box_collider(&mut self, pos: &CVector2<FSize>, size: &CVector2<FSize>, rotation: FSize) -> Collider {
@@ -255,10 +266,7 @@ impl PhysicsWorld {
 
     self.collider_body_map.insert(collider_handle, body_handle);
 
-    Collider {
-      body_handle: body_handle,
-      collider_handle: collider_handle,
-    }
+    Collider::new(body_handle, collider_handle)
   }
 
   ///Destroy a collider (also destroys the body if no colliders remain... this may not be what you want in all cases but it's convenient for now)

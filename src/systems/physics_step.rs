@@ -28,7 +28,7 @@ impl<'s> System<'s> for PhysicsStep {
     Entities<'s>,
     Read<'s, Time>,
     Write<'s, PhysicsWorld>,
-    ReadStorage<'s, Collider>,
+    WriteStorage<'s, Collider>,
   );
 
   fn setup(&mut self, res: &mut Resources) {
@@ -38,11 +38,21 @@ impl<'s> System<'s> for PhysicsStep {
     self.removed_reader_id = Some(storage.track_removed());
   }
 
-  fn run(&mut self, (entities, time, mut physics_world, colliders): Self::SystemData) {
-    //Looks more stable if this is done first
-    //TODO: Shouldn't matter once lerping between physics positions
+  fn run(&mut self, (entities, time, mut physics_world, mut colliders): Self::SystemData) {
     let delta = time.delta_seconds();
-    physics_world.step(delta);
+    physics_world.add_time(delta);
+
+    while physics_world.step() {
+      //This is done here rather than the transform update system because c.update_transform must be called per physics step
+      for c in (&mut colliders).join() {
+        let collider = physics_world
+          .world
+          .collider(c.collider_handle)
+          .expect("Failed to resolve collider handle to collider");
+
+        c.update_transform(&collider.position());
+      }
+    }
 
     self.dirty.clear();
     colliders.populate_inserted(&mut self.inserted_reader_id.as_mut().unwrap(), &mut self.dirty);

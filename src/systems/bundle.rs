@@ -16,18 +16,20 @@ use super::DropLift;
 use super::ShapeVisualizer;
 use super::Spawner;
 use super::DropDirectionChanger;
+use super::PhysicsTransformUpdate;
 
 pub struct GameBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GameBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
-      builder.add(LogFps::default(), "log_fps_system", &["fps_counter_system"]);
+      builder.add(PhysicsStep::default(), "physics_step_system", &[]);
+
+      builder.add(Walker::default(), "walker_system", &[]);
+      builder.add(LogFps::default(), "log_fps_system", &[]);
       builder.add(BasicVelocity::default(), "basic_velocity_system", &[]);
       builder.add(CameraMovement::default(), "camera_movement_system", &[]);
       builder.add(PhysicsVisualizer::default(), "physics_visualizer_system", &[]);
       builder.add(ShapeVisualizer::default(), "shape_visualizer_system", &[]);
-      builder.add(Walker::default(), "walker_system", &[]);
-      builder.add(PhysicsStep::default(), "physics_step_system", &["walker_system"]);
       builder.add(PlayerInput::default(), "player_input_system", &[]);
 
       //Murdering needs to happen last to make sure other commands are executed on the
@@ -46,6 +48,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameBundle {
         "drop_direction_changer_system",
       ]);
 
+      builder.add(PhysicsTransformUpdate::default(), "physics_transform_update_system", &["physics_step_system"]);
 
       //NOTE: builder.print_par_seq was very useful in working out why dependencies seemed to be reversed
       // in the murder/drop_cube systems. What was really happening was:
