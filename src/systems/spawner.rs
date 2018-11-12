@@ -16,7 +16,10 @@ use ::{
     Walker,
     Matriarch,
   },
-  resources::PhysicsWorld,
+  resources::{
+    PhysicsWorld,
+    SpawnStats,
+  },
 };
 
 pub struct Spawner {
@@ -45,12 +48,13 @@ impl<'s> System<'s> for Spawner {
     ReadStorage<'s, Transform>,
     Read<'s, Time>,
     WriteStorage<'s, SpawnerComponent>,
+    Write<'s, SpawnStats>,
     WriteStorage<'s, Family>,
     Write<'s, PhysicsWorld>,
     Read<'s, LazyUpdate>,
   );
 
-  fn run(&mut self, (entities, transforms, time, mut spawners, mut family_components, mut physics_world, updater): Self::SystemData) {
+  fn run(&mut self, (entities, transforms, time, mut spawners, mut spawn_stats, mut family_components, mut physics_world, updater): Self::SystemData) {
     let delta = time.delta_seconds();
 
     //Increase elapsed time for all Spawners
@@ -59,6 +63,8 @@ impl<'s> System<'s> for Spawner {
       if s.elapsed >= s.frequency {
         s.elapsed -= s.frequency;
         s.spawn_count += 1;
+
+        spawn_stats.spawned += 1;
 
         let collider = {
           let collider = physics_world.create_rigid_body_with_box_collider(

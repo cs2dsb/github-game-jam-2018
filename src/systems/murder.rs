@@ -11,6 +11,7 @@ use ::{
   resources::{
     Command,
     CommandChannel,
+    SpawnStats,
   },
 };
 
@@ -32,6 +33,7 @@ impl<'s> System<'s> for Murder {
     Entities<'s>,
     ReadStorage<'s, FamilyComponent>,
     ReadStorage<'s, Matriarch>,
+    Write<'s, SpawnStats>,
     Read<'s, LazyUpdate>,
     Read<'s, CommandChannel>,
   );
@@ -41,7 +43,7 @@ impl<'s> System<'s> for Murder {
     self.command_reader = Some(res.fetch_mut::<CommandChannel>().register_reader());
   }
 
-  fn run(&mut self, (entities, family_components, matriarchs, updater, commands): Self::SystemData) {
+  fn run(&mut self, (entities, family_components, matriarchs, mut spawn_stats, updater, commands): Self::SystemData) {
     let mut murder = false;
     for command in commands.read(self.command_reader.as_mut().unwrap()) {
       match command {
@@ -54,6 +56,7 @@ impl<'s> System<'s> for Murder {
       for (e, _) in (&entities, &matriarchs).join() {
         if entities.is_alive(e) {
           info!("Murdering Matriarch {:?}", e);
+          spawn_stats.killed += 1;
           let mut next_matriarch = None;
           if let Some(fam) = family_components.get(e) {
             next_matriarch = fam.next;

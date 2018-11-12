@@ -9,7 +9,11 @@ use amethyst::{
 };
 
 use ::{
-  components::Matriarch,
+  components::{
+    Matriarch,
+    Walker,
+    Direction,
+  },
   config::CameraConfig,
 };
 
@@ -22,16 +26,21 @@ impl<'s> System<'s> for CameraMovement {
     WriteStorage<'s, Transform>,
     ReadStorage<'s, FlyControlTag>,
     ReadStorage<'s, Matriarch>,
+    ReadStorage<'s, Walker>,
     Read<'s, CameraConfig>,
   );
 
-  fn run(&mut self, (time, mut transforms, fly_tags, matriarchs, camera_config): Self::SystemData) {
+  fn run(&mut self, (time, mut transforms, fly_tags, matriarchs, walkers, camera_config): Self::SystemData) {
     let mut matriarch_translation = Vector3::new(0.0, 0.0, 0.0);
     let mut num_matriarchs = 0;
 
-    for (t, _matriarch) in (&transforms, &matriarchs).join() {
+    for (t, _matriarch, w) in (&transforms, &matriarchs, &walkers).join() {
       num_matriarchs += 1;
       matriarch_translation += t.translation;
+      match w.direction {
+        Direction::Right => matriarch_translation += camera_config.offset,
+        Direction::Left => matriarch_translation -= camera_config.offset,
+      }
     }
 
     if num_matriarchs > 0 {

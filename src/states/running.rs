@@ -32,14 +32,18 @@ use rand::random;
 };
 
 use ::{
+  config::SpawnerConfig,
   resources::{
     PhysicsWorld,
+    SpawnStats,
   },
   components::{
     Spawner,
     SpawnerParams,
   },
 };
+
+const UI_UPDATE_FRAMES: u64 = 20; //How many frames to wait between ui updates
 
 
 pub type RunningPrefabData = BasicScenePrefab<Vec<PosNormTex>>;
@@ -48,6 +52,10 @@ pub struct RunningState {
   running_ui_handle: Handle<UiPrefab>,
   running_prefab_handle: Handle<Prefab<RunningPrefabData>>,
   fps_display: Option<Entity>,
+  spawned_display: Option<Entity>,
+  rate_display: Option<Entity>,
+  killed_display: Option<Entity>,
+  saved_display: Option<Entity>,
 }
 
 impl<'a, 'b> SimpleState<'a, 'b> for RunningState {
@@ -75,19 +83,86 @@ impl<'a, 'b> SimpleState<'a, 'b> for RunningState {
   }
   fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans<'a, 'b> {
     let world = &mut data.world;
+
+    //Fetch the entities for the ui fields
     if self.fps_display.is_none() {
       world.exec(|finder: UiFinder| {
         if let Some(entity) = finder.find("fps") {
-            self.fps_display = Some(entity);
+          self.fps_display = Some(entity);
         }
       });
     }
-    if self.fps_display.is_some() {
-      let mut ui_text = world.write_storage::<UiText>();
-      if let Some(fps_display) = self.fps_display.and_then(|entity| ui_text.get_mut(entity)) {
-        if world.read_resource::<Time>().frame_number() % 20 == 0 {
+
+    if self.spawned_display.is_none() {
+      world.exec(|finder: UiFinder| {
+        if let Some(entity) = finder.find("spawned") {
+          self.spawned_display = Some(entity);
+        }
+      });
+    }
+
+    if self.rate_display.is_none() {
+      world.exec(|finder: UiFinder| {
+        if let Some(entity) = finder.find("rate") {
+          self.rate_display = Some(entity);
+        }
+      });
+    }
+
+    if self.killed_display.is_none() {
+      world.exec(|finder: UiFinder| {
+        if let Some(entity) = finder.find("killed") {
+          self.killed_display = Some(entity);
+        }
+      });
+    }
+
+    if self.saved_display.is_none() {
+      world.exec(|finder: UiFinder| {
+        if let Some(entity) = finder.find("saved") {
+          self.saved_display = Some(entity);
+        }
+      });
+    }
+
+    //Update the ui values
+    if world.read_resource::<Time>().frame_number() % UI_UPDATE_FRAMES == 0 {
+      if self.fps_display.is_some() {
+        let mut ui_text = world.write_storage::<UiText>();
+        if let Some(fps_display) = self.fps_display.and_then(|entity| ui_text.get_mut(entity)) {
           let fps = world.read_resource::<FPSCounter>().sampled_fps();
           fps_display.text = format!("FPS: {:.*}", 1, fps);
+        }
+      }
+
+      if self.spawned_display.is_some() || self.rate_display.is_some() {
+        let mut rate = None;
+        for s in world.read_storage::<Spawner>().join() {
+          if let Some(rate) = rate {
+            assert_eq!(rate, s.frequency);
+          } else {
+            rate = Some(s.frequency);
+          }
+        }
+
+        let spawn_stats = world.read_resource::<SpawnStats>();
+        let mut ui_text = world.write_storage::<UiText>();
+        if let Some(spawned_display) = self.spawned_display.and_then(|entity| ui_text.get_mut(entity)) {
+          spawned_display.text = format!("SPAWN: {}/{}", spawn_stats.spawned, spawn_stats.total);
+        }
+        if let Some(killed_display) = self.killed_display.and_then(|entity| ui_text.get_mut(entity)) {
+          killed_display.text = format!("KILLED: {}", spawn_stats.killed);
+        }
+        if let Some(saved_display) = self.saved_display.and_then(|entity| ui_text.get_mut(entity)) {
+          saved_display.text = format!("SAVED: {}", spawn_stats.saved);
+        }
+        if let (Some(rate), Some(rate_display)) = (rate, self.rate_display.and_then(|entity| ui_text.get_mut(entity))) {
+          let spawner_config = world.read_resource::<SpawnerConfig>();
+          let rate = (rate - spawner_config.frequency_min) / (spawner_config.frequency_max - spawner_config.frequency_min);
+          let rate = 1.0 - rate;
+          let rate = 100.0 * rate;
+          let rate = rate.round() as u32;
+          rate_display.text = format!("RATE: {}", rate);
         }
       }
     }
@@ -102,6 +177,10 @@ impl RunningState {
       running_ui_handle,
       running_prefab_handle,
       fps_display: None,
+      spawned_display: None,
+      rate_display: None,
+      killed_display: None,
+      saved_display: None,
     }
   }
 
@@ -120,19 +199,28 @@ impl RunningState {
   }
 
   fn test_spawner(&self, world: &mut World) {
+    let (freq, max) = {
+      let config = world.read_resource::<SpawnerConfig>();
+      (config.frequency_default, config.max_default)
+    };
+
     let spawner = Spawner::new(SpawnerParams {
       spawn_size: Vector2::new(10.0, 10.0),
-      spawn_max: 100,
-      frequency: 2.0,
+      spawn_max: max,
+      frequency: freq,
     });
-    let mut spanwer_transform = Transform::default();
-    spanwer_transform.translation.x = 30.0;
-    spanwer_transform.translation.y = 30.0;
+    let mut spawner_transform = Transform::default();
+    spawner_transform.translation.x = 30.0;
+    spawner_transform.translation.y = 30.0;
+
+    world
+      .write_resource::<SpawnStats>()
+      .total += spawner.spawn_max;
 
     world
       .create_entity()
       .with(spawner)
-      .with(spanwer_transform)
+      .with(spawner_transform)
       .build();
   }
 

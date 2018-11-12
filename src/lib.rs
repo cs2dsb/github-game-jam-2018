@@ -18,6 +18,7 @@ extern crate log;
 #[macro_use]
 extern crate serde_derive;
 
+use log::LevelFilter;
 use amethyst::{
   prelude::*,
   renderer::{
@@ -51,15 +52,13 @@ use states::{
 mod components;
 mod resources;
 
-
-fn create_logger() {
-  use log::LevelFilter;
+fn create_logger(level: LevelFilter) {
   use std::io;
 
   let color_config = fern::colors::ColoredLevelConfig::new();
   fern::Dispatch::new()
     .chain(io::stdout())
-    .level(LevelFilter::Debug)
+    .level(level)
     .level_for("gfx_device_gl", LevelFilter::Warn)
     .format(move |out, message, record| {
       let color = color_config.get_color(&record.level());
@@ -78,16 +77,18 @@ fn create_logger() {
 }
 
 pub fn run() -> Result<(), amethyst::Error> {
-  //Custom create log to sicence "Created buffer" spam every frame
-  create_logger();
 
   let app_root = application_root_dir();
   let assets_path = format!("{}/assets/", app_root);
   let binding_path = format!("{}/resources/bindings_config.ron", app_root);
 
-  let display_config = DisplayConfig::load(&format!("{}/resources/display_config.ron", app_root));
   let game_config = GameConfig::load_no_fallback(&format!("{}/resources/config.ron", app_root))
     .expect("GameConfig failed to load");
+
+  //Custom create log to silence "Created buffer" spam every frame
+  create_logger(game_config.log_level);
+
+  let display_config = DisplayConfig::load(&format!("{}/resources/display_config.ron", app_root));
 
   //TODO: Clean up this mess. The configure_rendering and register_systems functions are really fragile
   let game_data = GameDataBuilder::default()
@@ -108,6 +109,7 @@ pub fn run() -> Result<(), amethyst::Error> {
     .with_resource(game_config.pawn)
     .with_resource(game_config.physics)
     .with_resource(game_config.camera)
+    .with_resource(game_config.spawner)
     .build(game_data)?;
   game.run();
   Ok(())
