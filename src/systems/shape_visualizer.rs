@@ -17,7 +17,10 @@ use amethyst::{
 };
 
 use random_color::RandomColor;
-use ::components::Shape as ShapeComponent;
+use ::components::{
+  Shape as ShapeComponent,
+  Color,
+};
 
 #[derive(Default)]
 pub struct ShapeVisualizer;
@@ -26,6 +29,7 @@ impl<'s> System<'s> for ShapeVisualizer {
   type SystemData = (
     Entities<'s>,
     ReadStorage<'s, ShapeComponent>,
+    ReadStorage<'s, Color>,
     Read<'s, LazyUpdate>,
     ReadExpect<'s, MaterialDefaults>,
     ReadExpect<'s, Loader>,
@@ -34,16 +38,23 @@ impl<'s> System<'s> for ShapeVisualizer {
     ReadStorage<'s, MeshHandle>,
   );
 
-  fn run(&mut self, (entities, shapes, updater, material_defaults, loader, texture_storage, mesh_storage, meshes): Self::SystemData) {
+  fn run(&mut self, (entities, shapes, colors, updater, material_defaults, loader, texture_storage, mesh_storage, meshes): Self::SystemData) {
     //Create meshes for shapes that don't have them
     for (entity, shape, _) in (&entities, &shapes, !&meshes).join() {
       //Material
-      let color = RandomColor::new().to_rgb_array();
-      let color = [
-        color[0] as f32 / 255.0,
-        color[1] as f32 / 255.0,
-        color[2] as f32 / 255.0,
-        1.0];
+      let color = {
+        if let Some(color) = colors.get(entity) {
+          (*color).into()
+        } else {
+          let color = RandomColor::new().to_rgb_array();
+          let color = [
+            color[0] as f32 / 255.0,
+            color[1] as f32 / 255.0,
+            color[2] as f32 / 255.0,
+          1.0];
+          color
+        }
+      };
       let material = create_colour_material(
         &material_defaults,
         &texture_storage,

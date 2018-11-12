@@ -51,6 +51,7 @@ use states::{
 
 mod components;
 mod resources;
+mod levels;
 
 fn create_logger(level: LevelFilter) {
   use std::io;

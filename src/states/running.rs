@@ -1,18 +1,9 @@
-use std::f32::consts::PI;
-use rand::random;
-
- use amethyst::{
+use amethyst::{
   assets::{
     Prefab,
     Handle,
   },
-  core::{
-    Time,
-    cgmath::{
-      Vector2,
-    },
-    transform::Transform,
-  },
+  core::Time,
   ecs::prelude::*,
   prelude::*,
   input::is_key_down,
@@ -33,14 +24,12 @@ use rand::random;
 
 use ::{
   config::SpawnerConfig,
-  resources::{
-    PhysicsWorld,
-    SpawnStats,
-  },
+  resources::SpawnStats,
   components::{
     Spawner,
-    SpawnerParams,
+    Collider,
   },
+  levels::*,
 };
 
 const UI_UPDATE_FRAMES: u64 = 20; //How many frames to wait between ui updates
@@ -65,9 +54,7 @@ impl<'a, 'b> SimpleState<'a, 'b> for RunningState {
 
     self.initialise_prefab(world);
     self.initialise_ui(world);
-
-    self.test_physics(world);
-    self.test_spawner(world);
+    self.initialise_level(world, &Level1::default());
   }
   fn handle_event(&mut self, _data: StateData<GameData>, event: StateEvent) -> SimpleTrans<'a, 'b> {
     match &event {
@@ -198,86 +185,31 @@ impl RunningState {
       .build();
   }
 
-  fn test_spawner(&self, world: &mut World) {
-    let (freq, max) = {
-      let config = world.read_resource::<SpawnerConfig>();
-      (config.frequency_default, config.max_default)
-    };
+  fn initialise_level<'a>(&self, world: &mut World, level: &'a Level) {
+    {
+      let entities = world.entities();
 
-    let spawner = Spawner::new(SpawnerParams {
-      spawn_size: Vector2::new(10.0, 10.0),
-      spawn_max: max,
-      frequency: freq,
-    });
-    let mut spawner_transform = Transform::default();
-    spawner_transform.translation.x = 30.0;
-    spawner_transform.translation.y = 30.0;
+      //Delete all existing colliders
+      let colliders = world.read_storage::<Collider>();
+      for (e, _) in (&entities, &colliders).join() {
+        entities
+          .delete(e)
+          .expect("Failed to delete entity");
+      }
 
-    world
-      .write_resource::<SpawnStats>()
-      .total += spawner.spawn_max;
+      //Delete all existing spawners
+      let spawners = world.read_storage::<Spawner>();
+      for (e, _) in (&entities, &spawners).join() {
+        entities
+          .delete(e)
+          .expect("Failed to delete entity");
+      }
 
-    world
-      .create_entity()
-      .with(spawner)
-      .with(spawner_transform)
-      .build();
-  }
-
-  fn test_physics(&self, world: &mut World) {
-    let (c0, c1, c2, c3) = {
-      let mut physics_world = world.write_resource::<PhysicsWorld>();
-
-      let len = 1000.0;
-      let thickness = 10.0;
-
-
-      //Bottom
-      let c0 = physics_world.create_ground_box_collider(
-        &Vector2::new(len/2.0, thickness/2.0), //Pos
-        &Vector2::new(len, thickness), //Size
-        0.0);
-
-      //Top
-      let c1 = physics_world.create_ground_box_collider(
-        &Vector2::new(len/2.0, len-thickness/2.0), //Pos
-        &Vector2::new(len, thickness), //Size
-        0.0);
-
-      //Left
-      let c2 = physics_world.create_ground_box_collider(
-        &Vector2::new(thickness/2.0, len/2.0), //Pos
-        &Vector2::new(thickness, len), //Size
-        0.0);
-
-      //Right
-      let c3 = physics_world.create_ground_box_collider(
-        &Vector2::new(len-thickness/2.0, len/2.0), //Pos
-        &Vector2::new(thickness, len), //Size
-        0.0);
-
-      (c0, c1, c2, c3)
-    };
-
-    world.create_entity().with(c0).build();
-    world.create_entity().with(c1).build();
-    world.create_entity().with(c2).build();
-    world.create_entity().with(c3).build();
-
-    for i in 1..10 {
-      //Collider attached to dynamic body
-      let collider = {
-        let mut physics_world = world.write_resource::<PhysicsWorld>();
-        physics_world.create_rigid_body_with_box_collider(
-          &Vector2::new(64.0, 1000.0 + 200.0 * (i as f32)),
-          &Vector2::new(64.0, 64.0),
-          random::<f32>() * 360.0 * PI / 180.0)
-      };
-
-      world
-        .create_entity()
-        .with(collider)
-        .build();
+      //Reset spawn stats
+      let mut stats = world.write_resource::<SpawnStats>();
+      *stats = SpawnStats::default();
     }
+
+    level.create_entities(world);
   }
 }

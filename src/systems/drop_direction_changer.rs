@@ -10,8 +10,6 @@ use amethyst::{
   renderer::Shape,
 };
 
-use nphysics2d::math::Velocity;
-
 use ::{
   components::{
     Matriarch,
@@ -134,7 +132,9 @@ impl<'s> System<'s> for DropDirectionChanger {
     }
     for c in changed {
       if let Some(body) = physics_world.world.rigid_body_mut(c) {
-        body.set_velocity(Velocity::zero());
+        let mut velocity = *body.velocity();
+        velocity.linear.x = 0.0;
+        body.set_velocity(velocity);
       }
     }
   }

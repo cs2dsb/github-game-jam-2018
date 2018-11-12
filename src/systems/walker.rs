@@ -1,6 +1,7 @@
 use amethyst::ecs::prelude::*;
 
 use ::{
+  config::PhysicsConfig,
   components::{
     Walker as WalkerComponent,
     Direction,
@@ -23,8 +24,6 @@ pub struct Walker {
   left_force: Option<ForceGeneratorHandle>,
 }
 
-const FORCE: f32 = 5.0;
-
 impl Default for Walker {
   fn default() -> Self {
     Self {
@@ -39,9 +38,10 @@ impl<'s> System<'s> for Walker {
     ReadStorage<'s, WalkerComponent>,
     ReadStorage<'s, Collider>,
     Write<'s, PhysicsWorld>,
+    Read<'s, PhysicsConfig>,
   );
 
-  fn run(&mut self, (walkers, colliders, mut physics_world): Self::SystemData) {
+  fn run(&mut self, (walkers, colliders, mut physics_world, physics_config): Self::SystemData) {
     //TODO: Couldn't find a way to add and remove body parts from force generators so destroying them every frame instead
     // This doesn't seem great
     if let Some(right) = self.right_force.take() {
@@ -59,13 +59,13 @@ impl<'s> System<'s> for Walker {
       if let Some(dir) = match walker.direction {
         Direction::Right => {
           if right.is_none() {
-            right = Some(ConstantAcceleration::new(Vector2::new(FORCE, 0.0), zero()));
+            right = Some(ConstantAcceleration::new(Vector2::new(physics_config.walker_force, 0.0), zero()));
           }
           &mut right
         },
         Direction::Left => {
           if left.is_none() {
-            left = Some(ConstantAcceleration::new(Vector2::new(-FORCE, 0.0), zero()));
+            left = Some(ConstantAcceleration::new(Vector2::new(-physics_config.walker_force, 0.0), zero()));
           }
           &mut left
         },
