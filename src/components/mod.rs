@@ -18,6 +18,7 @@ mod spawner;
 mod color;
 mod exit;
 mod remove;
+mod indicator;
 
 pub use self::basic_velocity::*;
 pub use self::physics::*;
@@ -28,6 +29,7 @@ pub use self::spawner::*;
 pub use self::color::*;
 pub use self::exit::*;
 pub use self::remove::*;
+pub use self::indicator::*;
 
 //TODO: I've just used BTreeStorage for all of these as the specs book suggests it's ok as a general default.
 //  Think about using more appropriate storages at some point.
@@ -77,4 +79,8 @@ impl Component for Exit {
 
 impl Component for Remove {
   type Storage = NullStorage<Self>;
+}
+
+impl Component for Indicator {
+  type Storage = BTreeStorage<Self>;
 }

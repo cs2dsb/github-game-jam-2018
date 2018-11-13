@@ -19,6 +19,7 @@ use super::DropDirectionChanger;
 use super::PhysicsTransformUpdate;
 use super::Exit;
 use super::Remove;
+use super::Indicator;
 
 pub struct GameBundle;
 
@@ -34,6 +35,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameBundle {
       builder.add(PhysicsVisualizer::default(), "physics_visualizer_system", &[]);
       builder.add(ShapeVisualizer::default(), "shape_visualizer_system", &[]);
       builder.add(PlayerInput::default(), "player_input_system", &[]);
+      builder.add(Indicator::default(), "indicator_system", &[]);
 
       //Murdering needs to happen last to make sure other commands are executed on the
       //matriarch before it's destroyed
