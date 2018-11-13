@@ -182,12 +182,12 @@ impl Level1 {
 
     let shape = ShapeComponent {
       shape: Shape::IcoSphere(None),
-      scale: (width * 0.5, height * 0.5, width * 0.5),
+      scale: (width * 0.5, height * 0.5, 0.1),
     };
 
     let mut transform = Transform::default();
-    transform.translation.x = 500.0;
-    transform.translation.y = 200.0;
+    transform.translation.x = 480.0;
+    transform.translation.y = 120.0;
 
     let sensor = {
       let mut physics_world = world.write_resource::<PhysicsWorld>();

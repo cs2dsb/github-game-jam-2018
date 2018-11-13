@@ -22,7 +22,7 @@ Prefab (
 
         //This is facing the xy plane
         (s: 1.0, v: (x: 0.0, y: 0.0, z: 0.0)),
-        translation: (x: 500.0, y: 500.0, z: 300.0),
+        translation: (x: 150.0, y: 100.0, z: 300.0),
       ),
       camera: Perspective((
         fovy: Rad (1.0471975512),
