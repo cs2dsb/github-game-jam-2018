@@ -11,6 +11,8 @@ pub struct PhysicsConfig {
   pub lift_force_rotation: f32,
   pub change_direction_width: f32,
   pub change_direction_height: f32,
+  pub exit_width: f32,
+  pub exit_height: f32,
   //How much acceleration the walker system applies
   pub walker_force: f32,
 }
@@ -25,6 +27,8 @@ impl Default for PhysicsConfig {
       lift_force_rotation: 0.1,
       change_direction_width: 50.0,
       change_direction_height: 50.0,
+      exit_width: 50.0,
+      exit_height: 50.0,
       walker_force: 5.0,
     }
   }

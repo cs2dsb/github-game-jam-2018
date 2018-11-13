@@ -17,12 +17,15 @@ use super::ShapeVisualizer;
 use super::Spawner;
 use super::DropDirectionChanger;
 use super::PhysicsTransformUpdate;
+use super::Exit;
+use super::Remove;
 
 pub struct GameBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GameBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
       builder.add(PhysicsStep::default(), "physics_step_system", &[]);
+      builder.add(Exit::default(), "exit_system", &["physics_step_system"]);
 
       builder.add(Walker::default(), "walker_system", &[]);
       builder.add(LogFps::default(), "log_fps_system", &[]);
@@ -47,6 +50,8 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameBundle {
         "spawner_system",
         "drop_direction_changer_system",
       ]);
+
+      builder.add(Remove::default(), "remove_system", &["exit_system", "murder_system"]);
 
       builder.add(PhysicsTransformUpdate::default(), "physics_transform_update_system", &["physics_step_system"]);
 

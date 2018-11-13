@@ -4,10 +4,14 @@ use amethyst::{
     transform::Transform,
   },
   ecs::prelude::*,
+  renderer::Shape,
 };
 
 use ::{
-  config::SpawnerConfig,
+  config::{
+    SpawnerConfig,
+    PhysicsConfig,
+  },
   resources::{
     PhysicsWorld,
     SpawnStats,
@@ -16,6 +20,8 @@ use ::{
     Color,
     Spawner,
     SpawnerParams,
+    Shape as ShapeComponent,
+    Exit,
   },
 };
 
@@ -38,6 +44,7 @@ impl Level for Level1 {
     self.create_spawner(world);
     self.create_walls(world);
     self.create_platforms(world);
+    self.create_exits(world);
   }
 }
 
@@ -165,5 +172,37 @@ impl Level1 {
         .with(self.wall_color)
         .build();
     }
+  }
+
+  fn create_exits(&self, world: &mut World) {
+    let (width, height) = {
+      let physics_config = world.read_resource::<PhysicsConfig>();
+      (physics_config.exit_width, physics_config.exit_height)
+    };
+
+    let shape = ShapeComponent {
+      shape: Shape::IcoSphere(None),
+      scale: (width * 0.5, height * 0.5, width * 0.5),
+    };
+
+    let mut transform = Transform::default();
+    transform.translation.x = 500.0;
+    transform.translation.y = 200.0;
+
+    let sensor = {
+      let mut physics_world = world.write_resource::<PhysicsWorld>();
+      physics_world.create_ground_box_sensor(
+        &Vector2::new(transform.translation.x, transform.translation.y), //Pos
+        &Vector2::new(width * 0.5, height * 0.5), //Size
+      0.0)
+    };
+
+    world
+      .create_entity()
+      .with(Exit)
+      .with(shape)
+      .with(transform)
+      .with(sensor)
+      .build();
   }
 }

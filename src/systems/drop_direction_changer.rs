@@ -26,16 +26,9 @@ use ::{
   },
 };
 
+#[derive(Default)]
 pub struct DropDirectionChanger {
   command_reader: Option<ReaderId<Command>>,
-}
-
-impl Default for DropDirectionChanger {
-  fn default() -> Self {
-    Self {
-      command_reader: None,
-    }
-  }
 }
 
 impl<'s> System<'s> for DropDirectionChanger {

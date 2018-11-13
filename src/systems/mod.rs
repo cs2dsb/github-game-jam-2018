@@ -21,6 +21,8 @@ mod shape_visualizer;
 mod spawner;
 mod drop_direction_changer;
 mod physics_transform_update;
+mod exit;
+mod remove;
 
 pub use self::basic_velocity::*;
 pub use self::bundle::*;
@@ -37,6 +39,9 @@ pub use self::shape_visualizer::*;
 pub use self::spawner::*;
 pub use self::drop_direction_changer::*;
 pub use self::physics_transform_update::*;
+pub use self::exit::*;
+pub use self::remove::*;
+
 //Not exactly sure how to structure this
 //Want the function in systems so things like TransformBundle dependencies on my systems
 //  aren't scattered about but it also probably doesn't make sense to configure everything

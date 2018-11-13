@@ -103,17 +103,9 @@ impl ForceGenerator<FSize> for LiftForce {
     true
   }
 }
-
+#[derive(Default)]
 pub struct DropLift {
   command_reader: Option<ReaderId<Command>>,
-}
-
-impl Default for DropLift {
-  fn default() -> Self {
-    Self {
-      command_reader: None,
-    }
-  }
 }
 
 impl<'s> System<'s> for DropLift {

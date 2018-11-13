@@ -31,8 +31,6 @@ Prefab (
         far: 2000.0,
       )),
       /*
-      */
-      /*
       camera: Orthographic((
         left: -166.0,
         right: 166.0,

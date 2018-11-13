@@ -16,14 +16,18 @@ mod walker;
 mod shape;
 mod spawner;
 mod color;
+mod exit;
+mod remove;
 
-pub use self::basic_velocity::BasicVelocity;
+pub use self::basic_velocity::*;
 pub use self::physics::*;
 pub use self::family::*;
 pub use self::walker::*;
 pub use self::shape::*;
 pub use self::spawner::*;
 pub use self::color::*;
+pub use self::exit::*;
+pub use self::remove::*;
 
 //TODO: I've just used BTreeStorage for all of these as the specs book suggests it's ok as a general default.
 //  Think about using more appropriate storages at some point.
@@ -65,4 +69,12 @@ impl Component for ChangeDirection {
 
 impl Component for Color {
   type Storage = BTreeStorage<Self>;
+}
+
+impl Component for Exit {
+  type Storage = NullStorage<Self>;
+}
+
+impl Component for Remove {
+  type Storage = NullStorage<Self>;
 }

@@ -12,6 +12,8 @@
     lift_force_rotation: 0.1,
     change_direction_width: 10.0,
     change_direction_height: 10.0,
+    exit_width: 50.0,
+    exit_height: 50.0,
     walker_force: 2.0,
   ),
   camera: (
