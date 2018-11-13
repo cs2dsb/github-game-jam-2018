@@ -56,11 +56,17 @@ mod levels;
 fn create_logger(level: LevelFilter) {
   use std::io;
 
+  let gfx_device_gl_level = if level > LevelFilter::Warn {
+    LevelFilter::Warn
+  } else {
+     level
+  };
+
   let color_config = fern::colors::ColoredLevelConfig::new();
   fern::Dispatch::new()
     .chain(io::stdout())
     .level(level)
-    .level_for("gfx_device_gl", LevelFilter::Warn)
+    .level_for("gfx_device_gl", gfx_device_gl_level)
     .format(move |out, message, record| {
       let color = color_config.get_color(&record.level());
       out.finish(format_args!(

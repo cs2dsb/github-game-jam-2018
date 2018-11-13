@@ -19,16 +19,9 @@ use ::{
 };
 
 
+#[derive(Default)]
 pub struct DropCube {
   command_reader: Option<ReaderId<Command>>,
-}
-
-impl Default for DropCube {
-  fn default() -> Self {
-    Self {
-      command_reader: None,
-    }
-  }
 }
 
 impl<'s> System<'s> for DropCube {

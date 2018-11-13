@@ -156,16 +156,19 @@ impl<'s> System<'s> for DropLift {
             bodies.push(c.body_handle);
           }
 
-          let force_x = physics_config.lift_force.x * match w.direction {
+          let dir = match w.direction {
             Direction::Left => -1.0,
             _ => 1.0,
           };
+
+          let force_x = physics_config.lift_force.x * dir;
+          let force_rot = physics_config.lift_force_rotation * dir;
 
           let lift = LiftForce::new(
             physics_config.lift_width * SCALE_METERS_PER_PIXEL,
             physics_config.lift_height * SCALE_METERS_PER_PIXEL,
             Point2::new(t.translation.x * SCALE_METERS_PER_PIXEL, t.translation.y * SCALE_METERS_PER_PIXEL),
-            Force::new(naVector2::new(force_x, physics_config.lift_force.y), 0.0),
+            Force::new(naVector2::new(force_x, physics_config.lift_force.y), force_rot),
             bodies);
 
           let fg = ForceGeneratorComponent {

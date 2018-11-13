@@ -18,7 +18,7 @@ use ::{
   },
 };
 
-const Z_SIZE: f32 = 10.0;
+const Z_SIZE: f32 = 0.15;
 
 #[derive(Default)]
 pub struct PhysicsVisualizer;

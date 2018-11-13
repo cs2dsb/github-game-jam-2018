@@ -22,7 +22,10 @@ use amethyst::{
 };
 
 use ::{
-  config::PhysicsConfig,
+  config::{
+    PhysicsConfig,
+    CameraConfig,
+  },
   resources::PhysicsWorld,
 };
 
@@ -135,9 +138,14 @@ fn configure_physics(world: &mut World) {
 }
 
 fn add_debug_lines(world: &mut World) {
+  let gridline_width = world.read_resource::<CameraConfig>().gridline_width;
+  if gridline_width <= 0.0 {
+    return;
+  }
+
   {
     let mut params = world.write_resource::<DebugLinesParams>();
-    params.line_width = 1.0;
+    params.line_width = gridline_width;
   }
   let mut debug_lines_component = DebugLinesComponent::new().with_capacity(600);
   for n in 0..100 {

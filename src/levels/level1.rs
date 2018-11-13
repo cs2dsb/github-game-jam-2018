@@ -28,7 +28,7 @@ pub struct Level1 {
 impl Default for Level1 {
   fn default() -> Self {
     Self {
-      wall_color: Color::new(0.4, 0.4, 0.4, 1.0),
+      wall_color: Color::new(0.6, 0.6, 0.6, 1.0),
     }
   }
 }
@@ -129,25 +129,41 @@ impl Level1 {
   }
 
   fn create_platforms(&self, world: &mut World) {
-    let c0 = {
+    let mut platforms = Vec::new();
+    {
       let mut physics_world = world.write_resource::<PhysicsWorld>();
 
-      let len = 200.0;
-      let thickness = 20.0;
+      //World is 1000
+      let len = 100.0;
+      let thickness = 10.0;
 
-      //Bottom
-      let c0 = physics_world.create_ground_box_collider(
-        &Vector2::new(len/2.0, 100.0), //Pos
-        &Vector2::new(len, thickness), //Size
-        0.0);
+      platforms.push(physics_world.create_ground_box_collider(
+        &Vector2::new(len, len), //Pos
+        &Vector2::new(len*2.0, thickness), //Size
+        0.0));
 
-      c0
-    };
+      platforms.push(physics_world.create_ground_box_collider(
+        &Vector2::new(len*4.0, len), //Pos
+        &Vector2::new(len*2.0, thickness), //Size
+        0.0));
 
-    world
-      .create_entity()
-      .with(c0)
-      .with(self.wall_color)
-      .build();
+      platforms.push(physics_world.create_ground_box_collider(
+        &Vector2::new(len*4.0, len * 0.5), //Pos
+        &Vector2::new(len, len), //Size
+        0.0));
+
+      platforms.push(physics_world.create_ground_box_collider(
+        &Vector2::new(len*4.0, len * 2.0), //Pos
+        &Vector2::new(len, len), //Size
+        0.0));
+    }
+
+    while let Some(c) = platforms.pop() {
+      world
+        .create_entity()
+        .with(c)
+        .with(self.wall_color)
+        .build();
+    }
   }
 }

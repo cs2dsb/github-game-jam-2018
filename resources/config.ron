@@ -1,6 +1,6 @@
 (
-  log_level: Debug,
-  //log_level: Error,
+  //log_level: Debug,
+  log_level: Error,
   pawn: (
     velocity: (x: 64.0, y: 64.0, z: 64.0),
   ),
@@ -9,13 +9,18 @@
     lift_width: 10.0,
     lift_height: 10.0,
     lift_force: (x: 0.0, y: 5.0),
+    lift_force_rotation: 0.1,
     change_direction_width: 10.0,
     change_direction_height: 10.0,
     walker_force: 2.0,
   ),
   camera: (
     convergence_speed: 5.0,
-    offset: (x: 100.0, y: 0.0, z: 0.0),
+    offset: (x: 0.0, y: 50.0, z: 0.0),
+    z_min: 100.0,
+    z_max: 500.0,
+    zoom_speed: 100.0,
+    gridline_width: 0.0,
   ),
   spawner: (
     frequency_min: 0.2,
