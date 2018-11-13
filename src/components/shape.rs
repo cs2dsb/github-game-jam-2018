@@ -1,6 +1,4 @@
-use amethyst::{
-  renderer::Shape as aShape,
-};
+use amethyst::renderer::Shape as aShape;
 
 ///Component represents the shape of an entity
 #[derive(Debug, Clone)]

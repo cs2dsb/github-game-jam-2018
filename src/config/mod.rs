@@ -4,11 +4,13 @@ mod pawn;
 mod physics;
 mod camera;
 mod spawner;
+mod levels;
 
 pub use self::pawn::PawnConfig;
 pub use self::physics::PhysicsConfig;
 pub use self::camera::CameraConfig;
 pub use self::spawner::SpawnerConfig;
+pub use self::levels::LevelsConfig;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct GameConfig {
@@ -17,6 +19,7 @@ pub struct GameConfig {
   pub physics: PhysicsConfig,
   pub camera: CameraConfig,
   pub spawner: SpawnerConfig,
+  pub levels: LevelsConfig,
 }
 
 impl Default for GameConfig {
@@ -27,6 +30,7 @@ impl Default for GameConfig {
       physics: Default::default(),
       camera: Default::default(),
       spawner: Default::default(),
+      levels: Default::default(),
     }
   }
 }

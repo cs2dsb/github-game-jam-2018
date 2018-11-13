@@ -11,6 +11,7 @@ use ::{
   config::{
     SpawnerConfig,
     PhysicsConfig,
+    LevelsConfig,
   },
   resources::{
     PhysicsWorld,
@@ -44,7 +45,6 @@ impl Level for Level1 {
   fn create_entities(&self, world: &mut World) {
     self.create_spawner(world);
     self.create_walls(world);
-    self.create_platforms(world);
     self.create_exits(world);
     self.create_hazards(world);
   }
@@ -75,105 +75,6 @@ impl Level1 {
       .with(spawner)
       .with(spawner_transform)
       .build();
-  }
-
-  fn create_walls(&self, world: &mut World) {
-    let (c0, c1, c2, c3) = {
-      let mut physics_world = world.write_resource::<PhysicsWorld>();
-
-      let len = 1000.0;
-      let thickness = 10.0;
-
-      //Bottom
-      let c0 = physics_world.create_ground_box_collider(
-        &Vector2::new(len/2.0, thickness/2.0), //Pos
-        &Vector2::new(len, thickness), //Size
-        0.0);
-
-      //Top
-      let c1 = physics_world.create_ground_box_collider(
-        &Vector2::new(len/2.0, len-thickness/2.0), //Pos
-        &Vector2::new(len, thickness), //Size
-        0.0);
-
-      //Left
-      let c2 = physics_world.create_ground_box_collider(
-        &Vector2::new(thickness/2.0, len/2.0), //Pos
-        &Vector2::new(thickness, len), //Size
-        0.0);
-
-      //Right
-      let c3 = physics_world.create_ground_box_collider(
-        &Vector2::new(len-thickness/2.0, len/2.0), //Pos
-        &Vector2::new(thickness, len), //Size
-        0.0);
-
-      (c0, c1, c2, c3)
-    };
-
-    world
-      .create_entity()
-      .with(c0)
-      .with(self.wall_color)
-      .build();
-
-    world
-      .create_entity()
-      .with(c1)
-      .with(self.wall_color)
-      .build();
-
-    world
-      .create_entity()
-      .with(c2)
-      .with(self.wall_color)
-      .build();
-
-    world
-      .create_entity()
-      .with(c3)
-      .with(self.wall_color)
-      .build();
-
-  }
-
-  fn create_platforms(&self, world: &mut World) {
-    let mut platforms = Vec::new();
-    {
-      let mut physics_world = world.write_resource::<PhysicsWorld>();
-
-      //World is 1000
-      let len = 100.0;
-      let thickness = 10.0;
-
-      platforms.push(physics_world.create_ground_box_collider(
-        &Vector2::new(len, len), //Pos
-        &Vector2::new(len*2.0, thickness), //Size
-        0.0));
-
-      platforms.push(physics_world.create_ground_box_collider(
-        &Vector2::new(len*4.0, len), //Pos
-        &Vector2::new(len*2.0, thickness), //Size
-        0.0));
-
-      platforms.push(physics_world.create_ground_box_collider(
-        &Vector2::new(len*4.0, len * 0.5), //Pos
-        &Vector2::new(len, len), //Size
-        0.0));
-
-      platforms.push(physics_world.create_ground_box_collider(
-        &Vector2::new(len*4.0, len * 2.0), //Pos
-        &Vector2::new(len, len), //Size
-        0.0));
-    }
-
-    while let Some(c) = platforms.pop() {
-      world
-        .create_entity()
-        .with(c)
-        .with(self.wall_color)
-        .build();
-    }
   }
 
   fn create_exits(&self, world: &mut World) {
@@ -211,6 +112,26 @@ impl Level1 {
       .build();
   }
 
+
+
+  fn create_wall(&self, world: &mut World, width: f32, height: f32, x: f32, y: f32) {
+    let collider = {
+      let mut physics_world = world.write_resource::<PhysicsWorld>();
+      physics_world.create_ground_box_collider(
+        &Vector2::new(x, y),
+        &Vector2::new(width, height),
+      0.0)
+    };
+
+    let color = self.wall_color.clone();
+
+    world
+      .create_entity()
+      .with(collider)
+      .with(color)
+      .build();
+  }
+
   fn create_hazard(&self, world: &mut World, width: f32, height: f32, x: f32, y: f32) {
     let shape = ShapeComponent {
       shape: Shape::Cube,
@@ -224,8 +145,8 @@ impl Level1 {
     let sensor = {
       let mut physics_world = world.write_resource::<PhysicsWorld>();
       physics_world.create_ground_box_sensor(
-        &Vector2::new(transform.translation.x, transform.translation.y), //Pos
-        &Vector2::new(width, height), //Size
+        &Vector2::new(x, y),
+        &Vector2::new(width, height),
       0.0)
     };
 
@@ -242,7 +163,44 @@ impl Level1 {
   }
 
   fn create_hazards(&self, world: &mut World) {
-    self.create_hazard(world, 10.0, 85.0, 345.0, 52.5);
-    self.create_hazard(world, 540.0, 10.0, 720.0, 15.0);
+    let mut list = Vec::new();
+    //This is to get around the world borrow //TODO: better way?
+    {
+      let levels_config = world.read_resource::<LevelsConfig>();
+      if levels_config.levels.len() < 1 {
+        panic!("LevelsConfig.levels.len < 1");
+      }
+
+      if let Some(ref hazards) = levels_config.levels[0].deadly_areas {
+        for h in &hazards.vec {
+          list.push(h.clone());
+        }
+      }
+    }
+
+    for h in list {
+      self.create_hazard(world, h.size.x, h.size.y, h.position.x, h.position.y);
+    }
+  }
+
+  fn create_walls(&self, world: &mut World) {
+    let mut list = Vec::new();
+    //This is to get around the world borrow //TODO: better way?
+    {
+      let levels_config = world.read_resource::<LevelsConfig>();
+      if levels_config.levels.len() < 1 {
+        panic!("LevelsConfig.levels.len < 1");
+      }
+
+      if let Some(ref walls) = levels_config.levels[0].walls {
+        for h in &walls.vec {
+          list.push(h.clone());
+        }
+      }
+    }
+
+    for h in list {
+      self.create_wall(world, h.size.x, h.size.y, h.position.x, h.position.y);
+    }
   }
 }
