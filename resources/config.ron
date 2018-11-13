@@ -25,9 +25,9 @@
     gridline_width: 0.0,
   ),
   spawner: (
-    frequency_min: 0.2,
+    frequency_min: 0.1,
     frequency_max: 4.0,
-    frequency_default: 2.0,
+    frequency_default: 0.5,
     max_default: 50,
   ),
 )

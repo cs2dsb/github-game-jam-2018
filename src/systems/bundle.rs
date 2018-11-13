@@ -20,6 +20,7 @@ use super::PhysicsTransformUpdate;
 use super::Exit;
 use super::Remove;
 use super::Indicator;
+use super::DeadlyArea;
 
 pub struct GameBundle;
 
@@ -27,6 +28,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
       builder.add(PhysicsStep::default(), "physics_step_system", &[]);
       builder.add(Exit::default(), "exit_system", &["physics_step_system"]);
+      builder.add(DeadlyArea::default(), "deadly_area_system", &["physics_step_system"]);
 
       builder.add(Walker::default(), "walker_system", &[]);
       builder.add(LogFps::default(), "log_fps_system", &[]);

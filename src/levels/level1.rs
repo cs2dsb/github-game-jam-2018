@@ -22,6 +22,7 @@ use ::{
     SpawnerParams,
     Shape as ShapeComponent,
     Exit,
+    DeadlyArea,
   },
 };
 
@@ -45,6 +46,7 @@ impl Level for Level1 {
     self.create_walls(world);
     self.create_platforms(world);
     self.create_exits(world);
+    self.create_hazards(world);
   }
 }
 
@@ -187,15 +189,17 @@ impl Level1 {
 
     let mut transform = Transform::default();
     transform.translation.x = 480.0;
-    transform.translation.y = 120.0;
+    transform.translation.y = 130.0;
 
     let sensor = {
       let mut physics_world = world.write_resource::<PhysicsWorld>();
       physics_world.create_ground_box_sensor(
         &Vector2::new(transform.translation.x, transform.translation.y), //Pos
-        &Vector2::new(width * 0.5, height * 0.5), //Size
+        &Vector2::new(width, height), //Size
       0.0)
     };
+
+    let color = Color::new(0.2, 0.8, 0.2, 1.0);
 
     world
       .create_entity()
@@ -203,6 +207,42 @@ impl Level1 {
       .with(shape)
       .with(transform)
       .with(sensor)
+      .with(color)
       .build();
+  }
+
+  fn create_hazard(&self, world: &mut World, width: f32, height: f32, x: f32, y: f32) {
+    let shape = ShapeComponent {
+      shape: Shape::Cube,
+      scale: (width * 0.5, height * 0.5, 0.1),
+    };
+
+    let mut transform = Transform::default();
+    transform.translation.x = x;
+    transform.translation.y = y;
+
+    let sensor = {
+      let mut physics_world = world.write_resource::<PhysicsWorld>();
+      physics_world.create_ground_box_sensor(
+        &Vector2::new(transform.translation.x, transform.translation.y), //Pos
+        &Vector2::new(width, height), //Size
+      0.0)
+    };
+
+    let color = Color::new(0.8, 0.2, 0.2, 1.0);
+
+    world
+      .create_entity()
+      .with(DeadlyArea)
+      .with(shape)
+      .with(transform)
+      .with(sensor)
+      .with(color)
+      .build();
+  }
+
+  fn create_hazards(&self, world: &mut World) {
+    self.create_hazard(world, 10.0, 85.0, 345.0, 52.5);
+    self.create_hazard(world, 540.0, 10.0, 720.0, 15.0);
   }
 }

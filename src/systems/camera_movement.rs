@@ -60,9 +60,10 @@ impl<'s> System<'s> for CameraMovement {
       num_matriarchs += 1;
       matriarch_translation += t.translation;
       match w.direction {
-        Direction::Right => matriarch_translation += camera_config.offset,
-        Direction::Left => matriarch_translation -= camera_config.offset,
+        Direction::Right => matriarch_translation.x += camera_config.offset.x,
+        Direction::Left => matriarch_translation.x -= camera_config.offset.x,
       }
+      matriarch_translation.y += camera_config.offset.y;
     }
 
     if num_matriarchs > 0 {

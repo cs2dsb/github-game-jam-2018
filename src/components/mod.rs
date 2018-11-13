@@ -19,6 +19,7 @@ mod color;
 mod exit;
 mod remove;
 mod indicator;
+mod deadly_area;
 
 pub use self::basic_velocity::*;
 pub use self::physics::*;
@@ -30,6 +31,7 @@ pub use self::color::*;
 pub use self::exit::*;
 pub use self::remove::*;
 pub use self::indicator::*;
+pub use self::deadly_area::*;
 
 //TODO: I've just used BTreeStorage for all of these as the specs book suggests it's ok as a general default.
 //  Think about using more appropriate storages at some point.
@@ -83,4 +85,8 @@ impl Component for Remove {
 
 impl Component for Indicator {
   type Storage = BTreeStorage<Self>;
+}
+
+impl Component for DeadlyArea {
+  type Storage = NullStorage<Self>;
 }
