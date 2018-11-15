@@ -23,17 +23,18 @@ use amethyst::{
 };
 
 use ::{
-  config::SpawnerConfig,
+  config::{
+    SpawnerConfig,
+    LevelsConfig,
+  },
   resources::SpawnStats,
   components::{
     Spawner,
-    Collider,
   },
   levels::*,
 };
 
 const UI_UPDATE_FRAMES: u64 = 20; //How many frames to wait between ui updates
-
 
 pub type RunningPrefabData = BasicScenePrefab<Vec<PosNormTex>>;
 
@@ -45,6 +46,7 @@ pub struct RunningState {
   rate_display: Option<Entity>,
   killed_display: Option<Entity>,
   saved_display: Option<Entity>,
+  level: Option<Level>,
 }
 
 impl<'a, 'b> SimpleState<'a, 'b> for RunningState {
@@ -54,7 +56,7 @@ impl<'a, 'b> SimpleState<'a, 'b> for RunningState {
 
     self.initialise_prefab(world);
     self.initialise_ui(world);
-    self.initialise_level(world, &Level1::default());
+    self.initialise_level(world);
   }
   fn handle_event(&mut self, _data: StateData<GameData>, event: StateEvent) -> SimpleTrans<'a, 'b> {
     match &event {
@@ -168,6 +170,7 @@ impl RunningState {
       rate_display: None,
       killed_display: None,
       saved_display: None,
+      level: None,
     }
   }
 
@@ -185,31 +188,9 @@ impl RunningState {
       .build();
   }
 
-  fn initialise_level<'a>(&self, world: &mut World, level: &'a Level) {
-    {
-      let entities = world.entities();
-
-      //Delete all existing colliders
-      let colliders = world.read_storage::<Collider>();
-      for (e, _) in (&entities, &colliders).join() {
-        entities
-          .delete(e)
-          .expect("Failed to delete entity");
-      }
-
-      //Delete all existing spawners
-      let spawners = world.read_storage::<Spawner>();
-      for (e, _) in (&entities, &spawners).join() {
-        entities
-          .delete(e)
-          .expect("Failed to delete entity");
-      }
-
-      //Reset spawn stats
-      let mut stats = world.write_resource::<SpawnStats>();
-      *stats = SpawnStats::default();
-    }
-
-    level.create_entities(world);
+  fn initialise_level<'a>(&mut self, world: &mut World) {
+    let level = Level::new(&world.read_resource::<LevelsConfig>());
+    level.load(world);
+    self.level = Some(level);
   }
 }

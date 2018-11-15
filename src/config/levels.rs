@@ -11,7 +11,7 @@ pub struct Cuboid {
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct CuboidSet {
-  pub vec: Vec<Cuboid>,
+  pub list: Vec<Cuboid>,
   pub color: Option<Color>,
 }
 
@@ -19,6 +19,8 @@ pub struct CuboidSet {
 pub struct LevelConfig {
   pub walls: Option<CuboidSet>,
   pub deadly_areas: Option<CuboidSet>,
+  pub exits: Option<CuboidSet>,
+  pub spawners: Option<CuboidSet>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]

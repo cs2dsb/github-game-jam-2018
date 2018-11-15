@@ -10,7 +10,7 @@ pub use self::pawn::PawnConfig;
 pub use self::physics::PhysicsConfig;
 pub use self::camera::CameraConfig;
 pub use self::spawner::SpawnerConfig;
-pub use self::levels::LevelsConfig;
+pub use self::levels::*;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct GameConfig {
