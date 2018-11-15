@@ -50,35 +50,44 @@ impl Level {
   }
 
   pub fn load(&mut self, world: &mut World) {
+    if self.loaded {
+      self.unload(world);
+    }
     let level = &self.levels[self.current_level];
     self.create_level_objects(world, level);
     self.loaded = true;
   }
 
   pub fn next(&mut self) {
-    self.current_level += 1;
+    if self.is_more_levels() {
+      self.current_level += 1;
+    }
   }
 
   pub fn is_more_levels(&self) -> bool {
-    self.current_level < self.levels.len()
+    self.current_level < (self.levels.len() - 1)
   }
 
   pub fn unload(&mut self, world: &mut World) {
     if self.loaded {
       self.loaded = false;
-      let entities = world.entities();
+      {
+        let entities = world.entities();
 
-      //Delete all existing colliders
-      let colliders = world.read_storage::<Collider>();
-      for (e, _) in (&entities, &colliders).join() {
-        entities
-          .delete(e)
-          .expect("Failed to delete entity");
+        //Delete all existing colliders
+        let colliders = world.read_storage::<Collider>();
+        for (e, _) in (&entities, &colliders).join() {
+          entities
+            .delete(e)
+            .expect("Failed to delete entity");
+        }
+
+        //Reset spawn stats
+        let mut stats = world.write_resource::<SpawnStats>();
+        *stats = SpawnStats::default();
       }
-
-      //Reset spawn stats
-      let mut stats = world.write_resource::<SpawnStats>();
-      *stats = SpawnStats::default();
+      //To make sure entities are actually deleted before we proceed
+      world.maintain();
     }
   }
 

@@ -78,6 +78,17 @@ impl<'a, 'b> SimpleState<'a, 'b> for RunningState {
             Err(e) => error!("Error loading GameConfig: {}", e),
           }
         }
+        if is_key_down(&event, VirtualKeyCode::N) {
+          if let Some(level) = &mut self.level {
+            if level.is_more_levels() {
+              info!("Loading next level");
+              level.next();
+              level.load(data.world);
+            } else {
+              info!("No more levels");
+            }
+          }
+        }
       },
       _ => {},
     }

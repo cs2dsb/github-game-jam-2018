@@ -54,23 +54,8 @@ impl<'s> System<'s> for PhysicsStep {
       }
     }
 
-    self.dirty.clear();
-    colliders.populate_inserted(&mut self.inserted_reader_id.as_mut().unwrap(), &mut self.dirty);
-
-    for (e, c, index) in (&entities, &colliders, &self.dirty).join() {
-      let index = index as usize;
-      if self.collider_cache.contains_key(&index) {
-        //TODO:
-        //  This should be prevented by the generational index in specs but since the FlaggedStorage doesn't give us
-        //  I'm not sure how to to do better. https://github.com/slide-rs/specs/issues/361 talks about the issue of not
-        //  being able to get the entity/component with/after the remove event. Whatever they decide will likely replace
-        //  what I've cobbled together here
-        panic!("Collider created with the same index as an existing collider");
-      }
-      self.collider_cache.insert(index, c.clone());
-      physics_world.register_entity(e, c.collider_handle);
-    }
-
+    //Do removed first to stop deleting then creating an entity in the same frame from triggering the
+    //panic below (when index is already used)
     self.dirty.clear();
     colliders.populate_removed(&mut self.removed_reader_id.as_mut().unwrap(), &mut self.dirty);
 
@@ -83,5 +68,23 @@ impl<'s> System<'s> for PhysicsStep {
         panic!("Collider index {:?} missing from collider_cache", index);
       }
     }
+
+
+    self.dirty.clear();
+    colliders.populate_inserted(&mut self.inserted_reader_id.as_mut().unwrap(), &mut self.dirty);
+
+    for (e, c, index) in (&entities, &colliders, &self.dirty).join() {
+      let index = index as usize;
+      if self.collider_cache.contains_key(&index) {
+        //TODO:
+        // https://github.com/slide-rs/specs/issues/361 talks about the issue of not being able
+        // to get the entity/component with/after the remove event. Whatever they decide will
+        // likely replace what I've cobbled together here
+        panic!("Collider created with the same index as an existing collider");
+      }
+      self.collider_cache.insert(index, c.clone());
+      physics_world.register_entity(e, c.collider_handle);
+    }
+
   }
 }
