@@ -33,6 +33,7 @@ enum ObjectType {
 #[derive(Default)]
 pub struct Level {
   current_level: usize,
+  loaded: bool,
   levels: Vec<LevelConfig>,
 }
 
@@ -43,17 +44,15 @@ impl Level {
     }
     Self {
       current_level: 0,
+      loaded: false,
       levels: level_config.levels.clone(),
     }
   }
 
-  pub fn load(&self, world: &mut World) {
-    if self.current_level > 0 {
-      self.unload(world);
-    }
-
+  pub fn load(&mut self, world: &mut World) {
     let level = &self.levels[self.current_level];
     self.create_level_objects(world, level);
+    self.loaded = true;
   }
 
   pub fn next(&mut self) {
@@ -64,20 +63,23 @@ impl Level {
     self.current_level < self.levels.len()
   }
 
-  fn unload(&self, world: &mut World) {
-    let entities = world.entities();
+  pub fn unload(&mut self, world: &mut World) {
+    if self.loaded {
+      self.loaded = false;
+      let entities = world.entities();
 
-    //Delete all existing colliders
-    let colliders = world.read_storage::<Collider>();
-    for (e, _) in (&entities, &colliders).join() {
-      entities
-        .delete(e)
-        .expect("Failed to delete entity");
+      //Delete all existing colliders
+      let colliders = world.read_storage::<Collider>();
+      for (e, _) in (&entities, &colliders).join() {
+        entities
+          .delete(e)
+          .expect("Failed to delete entity");
+      }
+
+      //Reset spawn stats
+      let mut stats = world.write_resource::<SpawnStats>();
+      *stats = SpawnStats::default();
     }
-
-    //Reset spawn stats
-    let mut stats = world.write_resource::<SpawnStats>();
-    *stats = SpawnStats::default();
   }
 
   fn create_object(&self, world: &mut World, width: f32, height: f32, x: f32, y: f32, otype: ObjectType, color: Option<Color>, add_extras: Option<&Fn(EntityBuilder) -> EntityBuilder>) {

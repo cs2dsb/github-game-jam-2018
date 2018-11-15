@@ -33,9 +33,7 @@ use amethyst::{
 };
 
 mod config;
-use config::{
-  GameConfig,
-};
+use config::load_game_config;
 
 mod systems;
 use systems::register_systems;
@@ -89,8 +87,7 @@ pub fn run() -> Result<(), amethyst::Error> {
   let assets_path = format!("{}/assets/", app_root);
   let binding_path = format!("{}/resources/bindings_config.ron", app_root);
 
-  let game_config = GameConfig::load_no_fallback(&format!("{}/resources/config.ron", app_root))
-    .expect("GameConfig failed to load");
+  let game_config = load_game_config().expect("GameConfig failed to load");
 
   //Custom create log to silence "Created buffer" spam every frame
   create_logger(game_config.log_level);

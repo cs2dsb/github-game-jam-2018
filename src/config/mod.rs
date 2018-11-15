@@ -1,4 +1,11 @@
 use log::LevelFilter;
+use amethyst::{
+  prelude::*,
+  utils::{
+    application_root_dir,
+  },
+  config::ConfigError,
+};
 
 mod pawn;
 mod physics;
@@ -33,4 +40,8 @@ impl Default for GameConfig {
       levels: Default::default(),
     }
   }
+}
+
+pub fn load_game_config() -> Result<GameConfig, ConfigError> {
+  GameConfig::load_no_fallback(&format!("{}/resources/config.ron", application_root_dir()))
 }

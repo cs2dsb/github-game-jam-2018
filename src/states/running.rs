@@ -26,6 +26,7 @@ use ::{
   config::{
     SpawnerConfig,
     LevelsConfig,
+    load_game_config,
   },
   resources::SpawnStats,
   components::{
@@ -58,17 +59,29 @@ impl<'a, 'b> SimpleState<'a, 'b> for RunningState {
     self.initialise_ui(world);
     self.initialise_level(world);
   }
-  fn handle_event(&mut self, _data: StateData<GameData>, event: StateEvent) -> SimpleTrans<'a, 'b> {
+  fn handle_event(&mut self, data: StateData<GameData>, event: StateEvent) -> SimpleTrans<'a, 'b> {
     match &event {
       StateEvent::Window(event) => {
         if is_key_down(&event, VirtualKeyCode::Escape) {
-          Trans::Quit
-        } else {
-          Trans::None
+          return Trans::Quit;
+        }
+        if is_key_down(&event, VirtualKeyCode::R) {
+          info!("Reloading game config");
+          match load_game_config() {
+            Ok(new_config) => {
+              {
+                let mut config = data.world.write_resource::<LevelsConfig>();
+                *config = new_config.levels;
+              }
+              self.initialise_level(data.world);
+            },
+            Err(e) => error!("Error loading GameConfig: {}", e),
+          }
         }
       },
-      _ => Trans::None,
+      _ => {},
     }
+    Trans::None
   }
   fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans<'a, 'b> {
     let world = &mut data.world;
@@ -189,7 +202,10 @@ impl RunningState {
   }
 
   fn initialise_level<'a>(&mut self, world: &mut World) {
-    let level = Level::new(&world.read_resource::<LevelsConfig>());
+    if let Some(mut level) = self.level.take() {
+      level.unload(world);
+    }
+    let mut level = Level::new(&world.read_resource::<LevelsConfig>());
     level.load(world);
     self.level = Some(level);
   }
