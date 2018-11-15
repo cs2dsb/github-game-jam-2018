@@ -2,9 +2,47 @@
 Container (
     transform: (
         id: "container",
-        anchor: TopLeft,
+        anchor: Middle,
+        stretch: XY( x_margin: 0., y_margin: 0.),
     ),
     children: [
+        Text (
+            transform: (
+                id: "name",
+                anchor: TopMiddle,
+                x: 0.,
+                y: -100.,
+                width: 800.,
+                height: 40.,
+                transparent: true,
+            ),
+            text: (
+                text: "Name",
+                font_size: 40.,
+                color: (1., 1., 1., 1.),
+                font: File("font/square.ttf", Ttf, ()),
+                align: Middle,
+            ),
+        ),
+        Text (
+            transform: (
+                id: "description",
+                anchor: TopMiddle,
+                x: 0.,
+                y: -140.,
+                width: 800.,
+                height: 40.,
+                transparent: true,
+            ),
+            text: (
+                text: "Description",
+                font_size: 25.,
+                color: (1., 1., 1., 1.),
+                font: File("font/square.ttf", Ttf, ()),
+                align: Middle,
+            ),
+        ),
+
         Text (
             transform: (
                 id: "running",

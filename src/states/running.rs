@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use amethyst::{
   assets::{
     Prefab,
@@ -9,6 +11,7 @@ use amethyst::{
   input::is_key_down,
   renderer::{
     PosNormTex,
+    Hidden,
   },
   ui::{
     UiFinder,
@@ -47,7 +50,11 @@ pub struct RunningState {
   rate_display: Option<Entity>,
   killed_display: Option<Entity>,
   saved_display: Option<Entity>,
+  name_display: Option<Entity>,
+  description_display: Option<Entity>,
   level: Option<Level>,
+  level_start: Option<Instant>,
+  level_text_update_needed: bool,
 }
 
 impl<'a, 'b> SimpleState<'a, 'b> for RunningState {
@@ -79,15 +86,7 @@ impl<'a, 'b> SimpleState<'a, 'b> for RunningState {
           }
         }
         if is_key_down(&event, VirtualKeyCode::N) {
-          if let Some(level) = &mut self.level {
-            if level.is_more_levels() {
-              info!("Loading next level");
-              level.next();
-              level.load(data.world);
-            } else {
-              info!("No more levels");
-            }
-          }
+          self.next_level(data.world);
         }
       },
       _ => {},
@@ -138,10 +137,70 @@ impl<'a, 'b> SimpleState<'a, 'b> for RunningState {
       });
     }
 
+    if self.name_display.is_none() {
+      world.exec(|finder: UiFinder| {
+        if let Some(entity) = finder.find("name") {
+          self.name_display = Some(entity);
+        }
+      });
+    }
+
+    if self.description_display.is_none() {
+      world.exec(|finder: UiFinder| {
+        if let Some(entity) = finder.find("description") {
+          self.description_display = Some(entity);
+        }
+      });
+    }
+
+    if self.level_text_update_needed {
+      let mut ui_text = world.write_storage::<UiText>();
+      if let (Some(level), Some(name_display), Some(description_display)) =
+        (&self.level, &self.name_display, &self.description_display)
+      {
+        self.level_text_update_needed = false;
+        if let Some(name_display) = ui_text.get_mut(*name_display) {
+          name_display.text = level.name();
+        }
+        if let Some(description_display) = ui_text.get_mut(*description_display) {
+          description_display.text = level.description();
+        }
+      }
+    }
+
+
     //Update the ui values
     if world.read_resource::<Time>().frame_number() % UI_UPDATE_FRAMES == 0 {
+
+      if let (Some(level_start), Some(name_display), Some(description_display)) =
+        (self.level_start, self.name_display, self.description_display)
+      {
+        let mut hidden = world.write_storage::<Hidden>();
+        if level_start.elapsed().as_secs() < 5 {
+          if hidden.contains(name_display) {
+            hidden.remove(name_display);
+          }
+          if hidden.contains(description_display) {
+            hidden.remove(description_display);
+          }
+        } else {
+          if !hidden.contains(name_display) {
+            hidden
+              .insert(name_display, Hidden)
+              .expect("Failed to insert component");
+          }
+          if !hidden.contains(description_display) {
+            hidden
+              .insert(description_display, Hidden)
+              .expect("Failed to insert component");
+          }
+          self.level_start = None;
+        }
+      }
+
+      let mut ui_text = world.write_storage::<UiText>();
+
       if self.fps_display.is_some() {
-        let mut ui_text = world.write_storage::<UiText>();
         if let Some(fps_display) = self.fps_display.and_then(|entity| ui_text.get_mut(entity)) {
           let fps = world.read_resource::<FPSCounter>().sampled_fps();
           fps_display.text = format!("FPS: {:.*}", 1, fps);
@@ -159,7 +218,6 @@ impl<'a, 'b> SimpleState<'a, 'b> for RunningState {
         }
 
         let spawn_stats = world.read_resource::<SpawnStats>();
-        let mut ui_text = world.write_storage::<UiText>();
         if let Some(spawned_display) = self.spawned_display.and_then(|entity| ui_text.get_mut(entity)) {
           spawned_display.text = format!("SPAWN: {}/{}", spawn_stats.spawned, spawn_stats.total);
         }
@@ -194,7 +252,11 @@ impl RunningState {
       rate_display: None,
       killed_display: None,
       saved_display: None,
+      name_display: None,
+      description_display: None,
       level: None,
+      level_start: None,
+      level_text_update_needed: false,
     }
   }
 
@@ -212,12 +274,28 @@ impl RunningState {
       .build();
   }
 
-  fn initialise_level<'a>(&mut self, world: &mut World) {
+  fn initialise_level(&mut self, world: &mut World) {
     if let Some(mut level) = self.level.take() {
       level.unload(world);
     }
     let mut level = Level::new(&world.read_resource::<LevelsConfig>());
     level.load(world);
     self.level = Some(level);
+    self.level_start = Some(Instant::now());
+    self.level_text_update_needed = true;
+  }
+
+  fn next_level(&mut self, world: &mut World) {
+    if let Some(level) = &mut self.level {
+      if level.is_more_levels() {
+        info!("Loading next level");
+        level.next();
+        level.load(world);
+        self.level_start = Some(Instant::now());
+        self.level_text_update_needed = true;
+      } else {
+        info!("No more levels");
+      }
+    }
   }
 }

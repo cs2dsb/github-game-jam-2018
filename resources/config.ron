@@ -27,11 +27,13 @@
   spawner: (
     frequency_min: 0.1,
     frequency_max: 4.0,
-    frequency_default: 0.5,
-    max_default: 50,
+    frequency_default: 0.1,
+    max_default: 500,
   ),
   levels: (
     levels: [(
+      name: "Easy beginnings",
+      description: "Press 2 to drop a lift to raise them through the gap",
       walls: ( color: (r: 0.5, g: 0.5, b: 0.5, a: 1.0 ), list: [
         (size: (x: 1000.0, y: 10.0, z: 0.1), position: (x: 500.0, y: 5.0, z: 0.0)), //Bottom
         (size: (x: 1000.0, y: 10.0, z: 0.1), position: (x: 500.0, y: 995.0, z: 0.0)), //Top
@@ -48,15 +50,17 @@
         (size: (x: 10.0, y: 85.0, z: 0.1), position: (x: 345.0, y: 52.5, z: 0.0)),
         (size: (x: 540.0, y: 10.0, z: 0.1), position: (x: 720.0, y: 15.0, z: 0.0)),
       ]),
-      exits: ( color: (r: 0.1, g: 0.8, b: 0.8, a: 1.0 ), list: [
-        (size: (x: 40.0, y: 40.0, z: 0.1), position: (x: 480.0, y: 130.0, z: 0.0)),
+      exits: ( color: (r: 0.1, g: 0.8, b: 0.1, a: 1.0 ), list: [
+        (size: (x: 25.0, y: 25.0, z: 0.1), position: (x: 480.0, y: 125.0, z: 0.0)),
       ]),
       spawners: ( color: (r: 0.1, g: 0.1, b: 0.8, a: 1.0 ), list: [
         (size: (x: 30.0, y: 30.0, z: 0.1), position: (x: 50.0, y: 50.0, z: 0.0)),
       ]),
     ),
     (
-      walls: ( color: (r: 0.9, g: 0.5, b: 0.5, a: 1.0 ), list: [
+      name: "Turn around bright eyes",
+      description: "Press 3 to drop a direction changer after passing the obsticle",
+      walls: ( color: (r: 0.5, g: 0.5, b: 0.5, a: 1.0 ), list: [
         (size: (x: 1000.0, y: 10.0, z: 0.1), position: (x: 500.0, y: 5.0, z: 0.0)), //Bottom
         (size: (x: 1000.0, y: 10.0, z: 0.1), position: (x: 500.0, y: 995.0, z: 0.0)), //Top
         (size: (x: 10.0, y: 1000.0, z: 0.1), position: (x: 5.0, y: 500.0, z: 0.0)), //Left
@@ -64,16 +68,19 @@
 
         //Obsticles
         (size: (x: 200.0, y: 10.0, z: 0.1), position: (x: 100.0, y: 100.0, z: 0.0)),
-        (size: (x: 200.0, y: 10.0, z: 0.1), position: (x: 400.0, y: 100.0, z: 0.0)),
+        (size: (x: 600.0, y: 10.0, z: 0.1), position: (x: 600.0, y: 100.0, z: 0.0)),
         (size: (x: 100.0, y: 85.0, z: 0.1), position: (x: 400.0, y: 52.5, z: 0.0)),
-        (size: (x: 100.0, y: 100.0, z: 0.1), position: (x: 400.0, y: 200.0, z: 0.0)),
+
+        //This block has fallen
+        (size: (x: 100.0, y: 100.0, z: 0.1), position: (x: 400.0, y: 175.0, z: 0.0),
+          color: (r: 0.2, g: 0.2, b: 0.2, a: 1.0), rotation: 0.2),
       ]),
       deadly_areas: ( color: (r: 0.8, g: 0.1, b: 0.1, a: 1.0 ), list: [
         (size: (x: 10.0, y: 85.0, z: 0.1), position: (x: 345.0, y: 52.5, z: 0.0)),
         (size: (x: 540.0, y: 10.0, z: 0.1), position: (x: 720.0, y: 15.0, z: 0.0)),
       ]),
-      exits: ( color: (r: 0.1, g: 0.8, b: 0.8, a: 1.0 ), list: [
-        (size: (x: 40.0, y: 40.0, z: 0.1), position: (x: 480.0, y: 130.0, z: 0.0)),
+      exits: ( color: (r: 0.1, g: 0.8, b: 0.1, a: 1.0 ), list: [
+        (size: (x: 25.0, y: 25.0, z: 0.1), position: (x: 480.0, y: 125.0, z: 0.0)),
       ]),
       spawners: ( color: (r: 0.1, g: 0.1, b: 0.8, a: 1.0 ), list: [
         (size: (x: 30.0, y: 30.0, z: 0.1), position: (x: 50.0, y: 50.0, z: 0.0)),

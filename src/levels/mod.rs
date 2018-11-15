@@ -22,6 +22,8 @@ use ::{
     Exit,
     DeadlyArea,
     Collider,
+    ForceGenerator,
+    ChangeDirection,
   },
 };
 
@@ -64,6 +66,22 @@ impl Level {
     }
   }
 
+  pub fn name(&self) -> String {
+    if let Some(ref name) = self.levels[self.current_level].name {
+      name.clone()
+    } else {
+      "".to_string()
+    }
+  }
+
+  pub fn description(&self) -> String {
+    if let Some(ref description) = self.levels[self.current_level].description {
+      description.clone()
+    } else {
+      "".to_string()
+    }
+  }
+
   pub fn is_more_levels(&self) -> bool {
     self.current_level < (self.levels.len() - 1)
   }
@@ -74,12 +92,37 @@ impl Level {
       {
         let entities = world.entities();
 
+        //This is to make sure we don't double delete entities
+        let mut to_delete = Vec::new();
+
         //Delete all existing colliders
-        let colliders = world.read_storage::<Collider>();
-        for (e, _) in (&entities, &colliders).join() {
+        let components = world.read_storage::<Collider>();
+        for (e, _) in (&entities, &components).join() {
+          if !to_delete.contains(&e) {
+            to_delete.push(e);
+          }
+        }
+
+        //Delete all lifts
+        let components = world.read_storage::<ForceGenerator>();
+        for (e, _) in (&entities, &components).join() {
+          if !to_delete.contains(&e) {
+            to_delete.push(e);
+          }
+        }
+
+        //Delete all direction changers
+        let components = world.read_storage::<ChangeDirection>();
+        for (e, _) in (&entities, &components).join() {
+          if !to_delete.contains(&e) {
+            to_delete.push(e);
+          }
+        }
+
+        for e in to_delete {
           entities
             .delete(e)
-            .expect("Failed to delete entity");
+            .expect("Failed to delete entitiy");
         }
 
         //Reset spawn stats
@@ -91,7 +134,7 @@ impl Level {
     }
   }
 
-  fn create_object(&self, world: &mut World, width: f32, height: f32, x: f32, y: f32, otype: ObjectType, color: Option<Color>, add_extras: Option<&Fn(EntityBuilder) -> EntityBuilder>) {
+  fn create_object(&self, world: &mut World, width: f32, height: f32, x: f32, y: f32, otype: ObjectType, color: Option<Color>, rotation: Option<f32>, add_extras: Option<&Fn(EntityBuilder) -> EntityBuilder>) {
     let object = {
       let mut physics_world = world.write_resource::<PhysicsWorld>();
       match otype {
@@ -99,12 +142,12 @@ impl Level {
           physics_world.create_ground_box_collider(
             &Vector2::new(x, y),
             &Vector2::new(width, height),
-            0.0),
+            rotation.unwrap_or(0.0)),
         ObjectType::Sensor =>
           physics_world.create_ground_box_sensor(
             &Vector2::new(x, y),
             &Vector2::new(width, height),
-            0.0),
+            rotation.unwrap_or(0.0)),
       }
     };
 
@@ -123,7 +166,7 @@ impl Level {
   }
 
 
-  fn create_wall(&self, world: &mut World, width: f32, height: f32, x: f32, y: f32, color: Option<Color>) {
+  fn create_wall(&self, world: &mut World, width: f32, height: f32, x: f32, y: f32, color: Option<Color>, rotation: Option<f32>) {
     self.create_object(
       world,
       width,
@@ -132,11 +175,12 @@ impl Level {
       y,
       ObjectType::GroundCollider,
       color,
+      rotation,
       None
     );
   }
 
-  fn create_hazard(&self, world: &mut World, width: f32, height: f32, x: f32, y: f32, color: Option<Color>) {
+  fn create_hazard(&self, world: &mut World, width: f32, height: f32, x: f32, y: f32, color: Option<Color>, rotation: Option<f32>) {
     self.create_object(
       world,
       width,
@@ -145,11 +189,12 @@ impl Level {
       y,
       ObjectType::Sensor,
       color,
+      rotation,
       Some(&|builder| builder.with(DeadlyArea)),
     );
   }
 
-  fn create_exit(&self, world: &mut World, width: f32, height: f32, x: f32, y: f32, color: Option<Color>) {
+  fn create_exit(&self, world: &mut World, width: f32, height: f32, x: f32, y: f32, color: Option<Color>, rotation: Option<f32>) {
     self.create_object(
       world,
       width,
@@ -158,11 +203,12 @@ impl Level {
       y,
       ObjectType::Sensor,
       color,
+      rotation,
       Some(&|builder| builder.with(Exit)),
     );
   }
 
-  fn create_spawner(&self, world: &mut World, width: f32, height: f32, x: f32, y: f32, color: Option<Color>) {
+  fn create_spawner(&self, world: &mut World, width: f32, height: f32, x: f32, y: f32, color: Option<Color>, rotation: Option<f32>) {
     let (freq, max) = {
       let config = world.read_resource::<SpawnerConfig>();
       (config.frequency_default, config.max_default)
@@ -179,6 +225,7 @@ impl Level {
       y,
       ObjectType::Sensor,
       color,
+      rotation,
       Some(&|builder| {
         let spawner = Spawner::new(SpawnerParams {
           spawn_size: Vector2::new(10.0, 10.0),
@@ -200,6 +247,7 @@ impl Level {
           o.position.x,
           o.position.y,
           o.color.or(set.color),
+          o.rotation,
         );
       }
     }
@@ -213,6 +261,7 @@ impl Level {
           o.position.x,
           o.position.y,
           o.color.or(set.color),
+          o.rotation,
         );
       }
     }
@@ -226,6 +275,7 @@ impl Level {
           o.position.x,
           o.position.y,
           o.color.or(set.color),
+          o.rotation,
         );
       }
     }
@@ -239,6 +289,7 @@ impl Level {
           o.position.x,
           o.position.y,
           o.color.or(set.color),
+          o.rotation,
         );
       }
     }

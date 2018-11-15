@@ -62,7 +62,7 @@ impl<'s> System<'s> for DropDirectionChanger {
     if drop_direction_changer {
       for (e, _, t, w) in (&entities, &matriarchs, &transforms, &walkers).join() {
         if entities.is_alive(e) {
-          info!("Dropping direction changer on Matriarch {:?}", e);
+          debug!("Dropping direction changer on Matriarch {:?}", e);
 
           let direction = w.direction.reversed();
           //let z_rot = match direction {

@@ -65,15 +65,21 @@ impl<'s> System<'s> for PhysicsStep {
         physics_world.destroy_collider(collider);
         debug!("Collider was deleted: {:?}", index);
       } else {
-        panic!("Collider index {:?} missing from collider_cache", index);
+        //Changed this from panic to warning as it was happening around level reload/next
+        //Either think more carefully about how to keep these in sync reliably or wait for
+        //specs issue 361 to be resolved.
+        warn!("Collider index {:?} missing from collider_cache", index);
       }
     }
-
 
     self.dirty.clear();
     colliders.populate_inserted(&mut self.inserted_reader_id.as_mut().unwrap(), &mut self.dirty);
 
     for (e, c, index) in (&entities, &colliders, &self.dirty).join() {
+      //These checks are recommended in the specs book on flagged storage
+      if !entities.is_alive(e) || !colliders.contains(e) {
+        continue;
+      }
       let index = index as usize;
       if self.collider_cache.contains_key(&index) {
         //TODO:

@@ -7,6 +7,7 @@ pub struct Cuboid {
   pub size: Vector3<f32>,
   pub position: Vector3<f32>,
   pub color: Option<Color>,
+  pub rotation: Option<f32>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -17,6 +18,8 @@ pub struct CuboidSet {
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct LevelConfig {
+  pub name: Option<String>,
+  pub description: Option<String>,
   pub walls: Option<CuboidSet>,
   pub deadly_areas: Option<CuboidSet>,
   pub exits: Option<CuboidSet>,

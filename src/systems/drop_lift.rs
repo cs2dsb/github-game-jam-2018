@@ -140,7 +140,7 @@ impl<'s> System<'s> for DropLift {
     if drop_lift {
       for (e, _, t, w) in (&entities, &matriarchs, &transforms, &walkers).join() {
         if entities.is_alive(e) {
-          info!("Dropping lift on Matriarch {:?}", e);
+          debug!("Dropping lift on Matriarch {:?}", e);
 
           //Get all the bodies we want to affect with this lift
           let mut bodies = Vec::new();
@@ -169,7 +169,7 @@ impl<'s> System<'s> for DropLift {
 
           let shape = ShapeComponent {
             shape: Shape::Cone(10),
-            scale: (2.0, 2.0, 2.0),
+            scale: (0.1, 2.0, 2.0),
           };
 
           let mut transform = t.clone();

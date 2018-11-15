@@ -51,7 +51,7 @@ impl<'s> System<'s> for DropCube {
     if drop_cube {
       for (e, _, t) in (&entities, &matriarchs, &transforms).join() {
         if entities.is_alive(e) {
-          info!("Dropping cube on Matriarch {:?}", e);
+          debug!("Dropping cube on Matriarch {:?}", e);
 
           let collider = physics_world.create_rigid_body_with_box_collider(
             &Vector2::new(t.translation.x, t.translation.y),

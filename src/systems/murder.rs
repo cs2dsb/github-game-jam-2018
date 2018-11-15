@@ -46,7 +46,7 @@ impl<'s> System<'s> for Murder {
     if murder {
       for (e, _) in (&entities, &matriarchs).join() {
         if entities.is_alive(e) {
-          info!("Murdering Matriarch {:?}", e);
+          debug!("Murdering Matriarch {:?}", e);
           spawn_stats.killed += 1;
 
           remove
