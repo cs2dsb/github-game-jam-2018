@@ -87,7 +87,7 @@ impl<'s> System<'s> for Spawner {
           .with(Walker::default())
           .build();
 
-        info!("Spawner ({:?}) spawned: {:?}", e, new);
+        debug!("Spawner ({:?}) spawned: {:?}", e, new);
 
         let mut need_matriarch = true;
         if let Some(last) = s.last_spawn {
@@ -100,7 +100,7 @@ impl<'s> System<'s> for Spawner {
         }
 
         if need_matriarch {
-          info!("Spawner ({:?}) promoted new spawn to Matriarch", e);
+          debug!("Spawner ({:?}) promoted new spawn to Matriarch", e);
           updater.insert(new, Matriarch);
         }
 
@@ -108,7 +108,7 @@ impl<'s> System<'s> for Spawner {
       }
 
       if s.spawn_count >= s.spawn_max {
-        info!("Spawner ({:?}) exhausted, deleting", e);
+        debug!("Spawner ({:?}) exhausted, deleting", e);
         entities
           .delete(e)
           .expect("Failed to delete entity");

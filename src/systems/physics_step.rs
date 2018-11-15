@@ -78,7 +78,7 @@ impl<'s> System<'s> for PhysicsStep {
       let index = index as usize;
       if let Some(collider) = self.collider_cache.remove(&index) {
         physics_world.destroy_collider(collider);
-        info!("Collider was deleted: {:?}", index);
+        debug!("Collider was deleted: {:?}", index);
       } else {
         panic!("Collider index {:?} missing from collider_cache", index);
       }

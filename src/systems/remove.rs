@@ -30,7 +30,7 @@ impl<'s> System<'s> for Remove {
       //Extra logic if it's a matriarch
       if let (Some(_), Some(fam)) = (matriarchs.get(e), family_components.get(e)) {
         if let Some(next) = fam.next {
-          info!("Promoted {:?} to Matriarch", next);
+          debug!("Promoted {:?} to Matriarch", next);
           updater.insert(next, Matriarch);
         }
       }
