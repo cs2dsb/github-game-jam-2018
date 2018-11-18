@@ -44,8 +44,12 @@ impl Level {
     if level_config.levels.len() == 0 {
       panic!("No levels defined in levels config");
     }
+    let start_level = level_config.start_level.unwrap_or(0);
+    if level_config.levels.len() <= start_level {
+      panic!("start_level > max level");
+    }
     Self {
-      current_level: 0,
+      current_level: start_level,
       loaded: false,
       levels: level_config.levels.clone(),
     }

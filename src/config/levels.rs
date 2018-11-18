@@ -28,12 +28,14 @@ pub struct LevelConfig {
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct LevelsConfig {
+  pub start_level: Option<usize>,
   pub levels: Vec<LevelConfig>,
 }
 
 impl Default for LevelsConfig {
   fn default() -> Self {
     Self {
+      start_level: None,
       levels: Vec::new(),
     }
   }
