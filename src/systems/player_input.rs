@@ -8,6 +8,7 @@ use amethyst::{
 use ::resources::{
   Command,
   CommandChannel,
+  Sounds,
 };
 
 #[derive(Default)]
@@ -19,9 +20,10 @@ impl<'s> System<'s> for PlayerInput {
   type SystemData = (
     Read<'s, InputHandler<String, String>>,
     Write<'s, CommandChannel>,
+    WriteExpect<'s, Sounds>,
   );
 
-  fn run(&mut self, (input, mut commands): Self::SystemData) {
+  fn run(&mut self, (input, mut commands, mut sounds): Self::SystemData) {
     for action in input.bindings.actions() {
       let was_down = self.down_actions.contains(&action);
       let is_down = input.action_is_down(&action).unwrap_or(false);
@@ -49,6 +51,10 @@ impl<'s> System<'s> for PlayerInput {
       if value != 0.0 {
         match axis.as_ref() {
           "move_z" => commands.single_write(Command::Zoom(value as f32)),
+          "volume" => {
+            let v = sounds.volume + 0.01 * value as f32;
+            sounds.volume = v.min(1.0).max(0.0);
+          },
           o => debug!("Unhandled input axis {} value: {}", o, value),
         }
       }

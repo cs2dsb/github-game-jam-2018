@@ -114,6 +114,7 @@ pub fn run() -> Result<(), amethyst::Error> {
     .with_resource(game_config.physics)
     .with_resource(game_config.camera)
     .with_resource(game_config.spawner)
+    .with_resource(game_config.sound)
     .with_resource(game_config.levels)
     .build(game_data)?;
   game.run();

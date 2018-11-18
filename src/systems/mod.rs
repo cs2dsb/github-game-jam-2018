@@ -4,7 +4,10 @@ use amethyst::{
     fps_counter::FPSCounterSystem,
   },
   core::transform::TransformBundle,
+  audio::AudioBundle,
 };
+
+use ::resources::Sounds;
 
 mod basic_velocity;
 mod bundle;
@@ -54,8 +57,9 @@ pub use self::matriarch_promote::*;
 //  inside systems...
 //Registers game systems and any core systems they depend on
 pub fn register_systems<'a, 'b>(builder: GameDataBuilder<'a, 'b>) -> Result<GameDataBuilder<'a, 'b>, amethyst::Error> {
-  builder.with(FPSCounterSystem, "fps_counter_system", &[])
-         .with_bundle(GameBundle)?
-         .with_bundle(TransformBundle::new())
-      //.with_dep(&["paddle_system", "move_balls_system"]))?
+  builder
+    .with(FPSCounterSystem, "fps_counter_system", &[])
+    .with_bundle(GameBundle)?
+    .with_bundle(TransformBundle::new())?
+    .with_bundle(AudioBundle::new(|sounds: &mut Sounds| sounds.next_music()))
 }

@@ -1,9 +1,7 @@
 (
   axes: {
-    "move_x": Emulated(pos: Key(D), neg: Key(A)),
-    "rot_y": Emulated(pos: Key(E), neg: Key(Q)),
     "move_z": Emulated(pos: Key(S), neg: Key(W)),
-    "move_y": Emulated(pos: Key(Space), neg: Key(LControl)),
+    "volume": Emulated(pos: Key(Add), neg: Key(Subtract)),
   },
   actions: {
     "one": [[Key(Key1)],[Key(Numpad1)]],
@@ -11,4 +9,3 @@
     "three": [[Key(Key3)],[Key(Numpad3)]],
   },
 )
-

@@ -5,6 +5,11 @@ use amethyst::{
     cgmath::Vector2,
   },
   ecs::prelude::*,
+  assets::AssetStorage,
+  audio::{
+    Source,
+    output::Output,
+  },
 };
 
 use ncollide2d::world::CollisionGroups;
@@ -19,6 +24,7 @@ use ::{
   resources::{
     PhysicsWorld,
     SpawnStats,
+    Sounds,
   },
 };
 
@@ -50,10 +56,13 @@ impl<'s> System<'s> for Spawner {
     WriteStorage<'s, SpawnerComponent>,
     Write<'s, SpawnStats>,
     Write<'s, PhysicsWorld>,
+    ReadExpect<'s, Sounds>,
+    Read<'s, AssetStorage<Source>>,
+    Option<Read<'s, Output>>,
     Read<'s, LazyUpdate>,
   );
 
-  fn run(&mut self, (entities, transforms, time, mut spawners, mut spawn_stats, mut physics_world, updater): Self::SystemData) {
+  fn run(&mut self, (entities, transforms, time, mut spawners, mut spawn_stats, mut physics_world, sounds, source_storage, output, updater): Self::SystemData) {
     let delta = time.delta_seconds();
 
     //Increase elapsed time for all Spawners
@@ -88,6 +97,10 @@ impl<'s> System<'s> for Spawner {
           .build();
 
         debug!("Spawner ({:?}) spawned: {:?}", e, new);
+
+        if let Some(output) = &output {
+          sounds.play_spawn(&source_storage, output);
+        }
       }
 
       if s.spawn_count >= s.spawn_max {

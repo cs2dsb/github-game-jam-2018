@@ -9,6 +9,7 @@ use amethyst::{
     RonFormat,
     Prefab,
   },
+  audio::Source,
   renderer::{
     DebugLinesComponent,
     DebugLinesParams,
@@ -25,8 +26,12 @@ use ::{
   config::{
     PhysicsConfig,
     CameraConfig,
+    SoundConfig,
   },
-  resources::PhysicsWorld,
+  resources::{
+    PhysicsWorld,
+    Sounds,
+  }
 };
 
 use super::{
@@ -52,6 +57,7 @@ impl<'a, 'b> SimpleState<'a, 'b> for LoadingState {
     add_loading_ui(world, &mut self.progress);
     self.load_running_prefab(world);
     self.load_running_ui(world);
+    self.load_sounds(world);
   }
   fn update(&mut self, _data: &mut StateData<GameData>) -> SimpleTrans<'a, 'b> {
     if !self.loader_complete {
@@ -103,7 +109,6 @@ impl LoadingState {
       &prefab_storage,
     );
 
-
     self.running_prefab_handle = Some(prefab_handle);
   }
 
@@ -119,6 +124,17 @@ impl LoadingState {
     );
 
     self.running_ui_handle = Some(ui_handle);
+  }
+
+  fn load_sounds(&mut self, world: &mut World) {
+    let sounds = {
+      let loader = world.read_resource::<Loader>();
+      let source_storage = world.read_resource::<AssetStorage<Source>>();
+      let sound_config = world.read_resource::<SoundConfig>();
+
+      Sounds::new(&loader, &source_storage, &mut self.progress, &sound_config)
+    };
+    world.add_resource(sounds);
   }
 }
 

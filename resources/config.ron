@@ -29,7 +29,10 @@
     frequency_min: 0.1,
     frequency_max: 4.0,
     frequency_default: 0.1,
-    max_default: 100,
+    max_default: 30,
+  ),
+  sound: (
+    volume: 0.25,
   ),
   levels: (
     start_level: 0,
