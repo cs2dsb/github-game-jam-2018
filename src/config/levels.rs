@@ -17,6 +17,12 @@ pub struct CuboidSet {
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct CameraOverrides {
+  pub offset: Option<Vector3<f32>>,
+  pub convergence_speed: Option<f32>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct LevelConfig {
   pub name: Option<String>,
   pub description: Option<String>,
@@ -24,6 +30,7 @@ pub struct LevelConfig {
   pub deadly_areas: Option<CuboidSet>,
   pub exits: Option<CuboidSet>,
   pub spawners: Option<CuboidSet>,
+  pub camera_overrides: Option<CameraOverrides>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]

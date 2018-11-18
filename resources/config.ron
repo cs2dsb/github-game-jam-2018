@@ -116,6 +116,9 @@
       (
         name: "Hotdog down a hallway",
         description: "Don't touch the sides",
+        camera_overrides: (
+          offset: (x: 75.0, y: 0.0, z: 0.0),
+        ),
         walls: ( color: (r: 0.5, g: 0.5, b: 0.5, a: 1.0 ), list: [
           (size: (x: 1300.0, y: 10.0, z: 0.1), position: (x: 650.0, y: 5.0, z: 0.0)), //Bottom
           (size: (x: 1300.0, y: 10.0, z: 0.1), position: (x: 650.0, y: 245.0, z: 0.0)), //Top

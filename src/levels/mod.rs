@@ -10,6 +10,8 @@ use ::{
     SpawnerConfig,
     LevelsConfig,
     LevelConfig,
+    CameraOverrides,
+    CameraConfig,
   },
   resources::{
     PhysicsWorld,
@@ -35,8 +37,9 @@ enum ObjectType {
 #[derive(Default)]
 pub struct Level {
   current_level: usize,
-  loaded: bool,
   levels: Vec<LevelConfig>,
+  loaded: bool,
+  prev_camera_settings: Option<CameraOverrides>,
 }
 
 impl Level {
@@ -52,6 +55,7 @@ impl Level {
       current_level: start_level,
       loaded: false,
       levels: level_config.levels.clone(),
+      prev_camera_settings: None,
     }
   }
 
@@ -60,6 +64,9 @@ impl Level {
       self.unload(world);
     }
     let level = &self.levels[self.current_level];
+    if let Some(camera_overrides) = &level.camera_overrides {
+      self.prev_camera_settings = Some(self.update_camera(world, camera_overrides));
+    }
     self.create_level_objects(world, level);
     self.loaded = true;
   }
@@ -90,9 +97,32 @@ impl Level {
     self.current_level < (self.levels.len() - 1)
   }
 
+  fn update_camera(&self, world: &mut World, overrides: &CameraOverrides) -> CameraOverrides {
+    let mut camera_config = world.write_resource::<CameraConfig>();
+    let prev = CameraOverrides {
+      convergence_speed: Some(camera_config.convergence_speed),
+      offset: Some(camera_config.offset),
+    };
+
+    if let Some(convergence_speed) = &overrides.convergence_speed {
+      camera_config.convergence_speed = *convergence_speed;
+    }
+    if let Some(offset) = &overrides.offset {
+      camera_config.offset = *offset;
+    }
+
+    prev
+  }
+
   pub fn unload(&mut self, world: &mut World) {
     if self.loaded {
       self.loaded = false;
+
+      //Restore the previous camera settings if there are any
+      if let Some(prev_camera_settings) = self.prev_camera_settings.take() {
+        self.update_camera(world, &prev_camera_settings);
+      }
+
       {
         let entities = world.entities();
 
