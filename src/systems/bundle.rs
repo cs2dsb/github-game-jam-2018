@@ -18,17 +18,16 @@ use super::Spawner;
 use super::DropDirectionChanger;
 use super::PhysicsTransformUpdate;
 use super::Exit;
-use super::Remove;
 use super::Indicator;
 use super::DeadlyArea;
+use super::Age;
+use super::MatriarchPromote;
 
 pub struct GameBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GameBundle {
     fn build(self, builder: &mut DispatcherBuilder<'a, 'b>) -> Result<()> {
       builder.add(PhysicsStep::default(), "physics_step_system", &[]);
-      builder.add(Exit::default(), "exit_system", &["physics_step_system"]);
-      builder.add(DeadlyArea::default(), "deadly_area_system", &["physics_step_system"]);
 
       builder.add(Walker::default(), "walker_system", &[]);
       builder.add(LogFps::default(), "log_fps_system", &[]);
@@ -39,23 +38,40 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameBundle {
       builder.add(PlayerInput::default(), "player_input_system", &[]);
       builder.add(Indicator::default(), "indicator_system", &[]);
 
+      builder.add(Age::default(), "age_system", &[]);
+
       //Murdering needs to happen last to make sure other commands are executed on the
       //matriarch before it's destroyed
       builder.add(DropCube::default(), "drop_cube_system", &["player_input_system"]);
       builder.add(DropLift::default(), "drop_lift_system", &["player_input_system"]);
       builder.add(DropDirectionChanger::default(), "drop_direction_changer_system", &["player_input_system"]);
       builder.add(Spawner::default(), "spawner_system", &[]);
-      //Depends on spawner_system so the spawner gets a chance to update the matriarch before it's potentially killed
-      //Otherwise the matriarch can be marked for removal but no other promoted because it's still alive until maintain is called
       builder.add(Murder::default(), "murder_system", &[
         "player_input_system",
         "drop_cube_system",
         "drop_lift_system",
-        "spawner_system",
         "drop_direction_changer_system",
       ]);
 
-      builder.add(Remove::default(), "remove_system", &["exit_system", "murder_system"]);
+      //These depend on the player input to reduce the chance of the player trying to do something and the matriarch
+      //dying a fraction before they do.
+      //TODO: Could add 2-300ms grace period after death that the command still goes to the prev matriarch.
+      builder.add(Exit::default(), "exit_system", &[
+        "physics_step_system",
+        "drop_cube_system",
+        "drop_lift_system",
+        "drop_direction_changer_system",
+      ]);
+      builder.add(DeadlyArea::default(), "deadly_area_system", &[
+        "physics_step_system",
+        "drop_cube_system",
+        "drop_lift_system",
+        "drop_direction_changer_system",
+      ]);
+
+      //This could depend on age but since they all age together it really doesn't matter
+      //if they are one tick behind or not
+      builder.add(MatriarchPromote::default(), "matriarch_promotion_system", &["murder_system"]);
 
       builder.add(PhysicsTransformUpdate::default(), "physics_transform_update_system", &["physics_step_system"]);
 

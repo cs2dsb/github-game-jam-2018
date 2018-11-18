@@ -22,9 +22,10 @@ mod spawner;
 mod drop_direction_changer;
 mod physics_transform_update;
 mod exit;
-mod remove;
 mod indicator;
 mod deadly_area;
+mod age;
+mod matriarch_promote;
 
 pub use self::basic_velocity::*;
 pub use self::bundle::*;
@@ -42,9 +43,10 @@ pub use self::spawner::*;
 pub use self::drop_direction_changer::*;
 pub use self::physics_transform_update::*;
 pub use self::exit::*;
-pub use self::remove::*;
 pub use self::indicator::*;
 pub use self::deadly_area::*;
+pub use self::age::*;
+pub use self::matriarch_promote::*;
 
 //Not exactly sure how to structure this
 //Want the function in systems so things like TransformBundle dependencies on my systems

@@ -89,6 +89,7 @@ impl ForceGenerator<FSize> for LiftForce {
 
       let mut part = bodies.body_part_mut(*handle);
 
+
       //let force = part.as_ref().inertia() * self.acceleration;
       // Apply the force.
       part.apply_force(&self.force);
@@ -159,7 +160,8 @@ impl<'s> System<'s> for DropLift {
           let lift = LiftForce::new(
             physics_config.lift_width * SCALE_METERS_PER_PIXEL,
             physics_config.lift_height * SCALE_METERS_PER_PIXEL,
-            Point2::new(t.translation.x * SCALE_METERS_PER_PIXEL, t.translation.y * SCALE_METERS_PER_PIXEL),
+            Point2::new(t.translation.x * SCALE_METERS_PER_PIXEL,
+              (t.translation.y + physics_config.lift_y_offset) * SCALE_METERS_PER_PIXEL),
             Force::new(naVector2::new(force_x, physics_config.lift_force.y), force_rot),
             bodies);
 
@@ -169,7 +171,11 @@ impl<'s> System<'s> for DropLift {
 
           let shape = ShapeComponent {
             shape: Shape::Cone(10),
-            scale: (0.1, 2.0, 2.0),
+            scale: (
+              0.1,
+              physics_config.lift_width * 0.5,
+              physics_config.lift_height * 0.5,
+            ),
           };
 
           let mut transform = t.clone();

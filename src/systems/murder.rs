@@ -6,7 +6,6 @@ use amethyst::{
 use ::{
   components::{
     Matriarch,
-    Remove,
   },
   resources::{
     Command,
@@ -26,7 +25,6 @@ impl<'s> System<'s> for Murder {
     ReadStorage<'s, Matriarch>,
     Write<'s, SpawnStats>,
     Read<'s, CommandChannel>,
-    WriteStorage<'s, Remove>,
   );
 
   fn setup(&mut self, res: &mut Resources) {
@@ -34,7 +32,7 @@ impl<'s> System<'s> for Murder {
     self.command_reader = Some(res.fetch_mut::<CommandChannel>().register_reader());
   }
 
-  fn run(&mut self, (entities,  matriarchs, mut spawn_stats, commands, mut remove): Self::SystemData) {
+  fn run(&mut self, (entities,  matriarchs, mut spawn_stats, commands): Self::SystemData) {
     let mut murder = false;
     for command in commands.read(self.command_reader.as_mut().unwrap()) {
       match command {
@@ -49,9 +47,9 @@ impl<'s> System<'s> for Murder {
           debug!("Murdering Matriarch {:?}", e);
           spawn_stats.killed += 1;
 
-          remove
-            .insert(e, Remove)
-            .expect("Failed to insert Remove component");
+          entities
+            .delete(e)
+            .expect("Failed to delete entity");
         }
       }
     }

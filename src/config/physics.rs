@@ -5,6 +5,7 @@ pub struct PhysicsConfig {
   pub gravity: f32,
   pub lift_width: f32,
   pub lift_height: f32,
+  pub lift_y_offset: f32,
   //Expressed as an inertia independent force (so it's not the same scale as gravity)
   //x component is multiplied by walk direction
   pub lift_force: Vector2<f32>,
@@ -23,6 +24,7 @@ impl Default for PhysicsConfig {
       gravity: -9.81,
       lift_width: 50.0,
       lift_height: 50.0,
+      lift_y_offset: -20.0,
       lift_force: Vector2::new(1.0, 1.0),
       lift_force_rotation: 0.1,
       change_direction_width: 50.0,
