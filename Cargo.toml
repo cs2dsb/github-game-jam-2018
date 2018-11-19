@@ -12,12 +12,15 @@ serde = "1.0"
 serde_derive = "1.0"
 nalgebra = "0.16"
 ncollide2d = "0.17"
-nphysics2d = "0.9"
 random_color = "0.4"
 
 [dependencies.amethyst]
 git = "https://github.com/amethyst/amethyst"
 #path = "../amethyst"
+
+[dependencies.nphysics2d]
+#Git to get the fix to apply_force so it works outside of force generators
+git = "https://github.com/rustsim/nphysics"
 
 [features]
 default = []

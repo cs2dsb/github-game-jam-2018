@@ -24,8 +24,6 @@ use ::{
     Exit,
     DeadlyArea,
     Collider,
-    ForceGenerator,
-    ChangeDirection,
   },
 };
 
@@ -129,24 +127,8 @@ impl Level {
         //This is to make sure we don't double delete entities
         let mut to_delete = Vec::new();
 
-        //Delete all existing colliders
+        //Delete all existing colliders (this also covers lifts, deadly areas and change direction)
         let components = world.read_storage::<Collider>();
-        for (e, _) in (&entities, &components).join() {
-          if !to_delete.contains(&e) {
-            to_delete.push(e);
-          }
-        }
-
-        //Delete all lifts
-        let components = world.read_storage::<ForceGenerator>();
-        for (e, _) in (&entities, &components).join() {
-          if !to_delete.contains(&e) {
-            to_delete.push(e);
-          }
-        }
-
-        //Delete all direction changers
-        let components = world.read_storage::<ChangeDirection>();
         for (e, _) in (&entities, &components).join() {
           if !to_delete.contains(&e) {
             to_delete.push(e);

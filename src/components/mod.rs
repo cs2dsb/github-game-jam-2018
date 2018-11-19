@@ -20,6 +20,7 @@ mod exit;
 mod indicator;
 mod deadly_area;
 mod age;
+mod launch_area;
 
 pub use self::basic_velocity::*;
 pub use self::physics::*;
@@ -32,6 +33,7 @@ pub use self::exit::*;
 pub use self::indicator::*;
 pub use self::deadly_area::*;
 pub use self::age::*;
+pub use self::launch_area::*;
 
 //TODO: I've just used BTreeStorage for all of these as the specs book suggests it's ok as a general default.
 //  Think about using more appropriate storages at some point.
@@ -63,10 +65,6 @@ impl Component for Spawner {
   type Storage = BTreeStorage<Self>;
 }
 
-impl Component for ForceGenerator {
-  type Storage = BTreeStorage<Self>;
-}
-
 impl Component for ChangeDirection {
   type Storage = BTreeStorage<Self>;
 }
@@ -88,5 +86,9 @@ impl Component for DeadlyArea {
 }
 
 impl Component for Age {
+  type Storage = BTreeStorage<Self>;
+}
+
+impl Component for LaunchArea {
   type Storage = BTreeStorage<Self>;
 }

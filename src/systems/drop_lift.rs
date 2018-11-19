@@ -7,103 +7,27 @@ use amethyst::{
       Quaternion,
       Euler,
       Deg,
+      Vector2,
     },
   },
   renderer::Shape,
 };
 
-use nphysics2d::{
-  solver::IntegrationParameters,
-  force_generator::ForceGenerator,
-  object::{
-    BodyHandle,
-    BodySet
-  },
-  math::{
-    Force,
-    Velocity,
-  },
-};
-
-use nalgebra::{
-  Point2,
-  Vector2 as naVector2,
-};
-
 use ::{
   components::{
     Matriarch,
-    Family,
     Walker,
-    Direction,
-    Collider,
     Shape as ShapeComponent,
-    ForceGenerator as ForceGeneratorComponent,
+    LaunchArea,
   },
   config::PhysicsConfig,
   resources::{
     Command,
     CommandChannel,
     PhysicsWorld,
-    FSize,
-    SCALE_METERS_PER_PIXEL,
   },
 };
 
-#[derive(Debug)]
-struct LiftForce {
-  bodies: Vec<BodyHandle>, //Bodies affected by lift
-  width: FSize, //How wide the lift is
-  height: FSize, //How high above the lift the effect cuts out
-  center: Point2<FSize>, //Center of the lift
-  force: Force<FSize>,
-}
-
-impl LiftForce {
-  fn new(width: FSize, height: FSize, center: Point2<FSize>, force: Force<FSize>, bodies: Vec<BodyHandle>) -> Self {
-    Self {
-      bodies,
-      width,
-      height,
-      center,
-      force,
-    }
-  }
-}
-
-impl ForceGenerator<FSize> for LiftForce {
-  fn apply(&mut self, _: &IntegrationParameters<FSize>, bodies: &mut BodySet<FSize>) -> bool {
-    //Remove any that have been destroyed
-    self.bodies.retain(|b| bodies.contains(*b));
-
-    for handle in &self.bodies {
-      let delta = bodies.body_part(*handle).center_of_mass() - self.center;
-      if delta.x.abs() > (self.width / 2.0) || delta.y < -0.1 || delta.y > self.height {
-        continue;
-      }
-
-      //Clear any existing velocity to make the effect of the lift repeatable
-      if let Some(rigid_body) = bodies.rigid_body_mut(*handle) {
-        rigid_body.set_velocity(Velocity::zero());
-      }
-
-      let mut part = bodies.body_part_mut(*handle);
-
-
-      //let force = part.as_ref().inertia() * self.acceleration;
-      // Apply the force.
-      part.apply_force(&self.force);
-    }
-
-    // If `false` is returned, the physis world will remove
-    // this force generator after this call.
-    //self.bodies.len() > 0
-
-    //There doesn't appear to be a way to check if a fg still exists in the world, the call
-    //to fetch it just panics if it's been deleted so best not let that happen automatically...
-    true
-  }
-}
 #[derive(Default)]
 pub struct DropLift {
   command_reader: Option<ReaderId<Command>>,
@@ -115,10 +39,7 @@ impl<'s> System<'s> for DropLift {
     Read<'s, CommandChannel>,
     ReadStorage<'s, Matriarch>,
     ReadStorage<'s, Transform>,
-    ReadStorage<'s, Family>,
     ReadStorage<'s, Walker>,
-    ReadStorage<'s, Collider>,
-    ReadStorage<'s, ForceGeneratorComponent>,
     Write<'s, PhysicsWorld>,
     Read<'s, PhysicsConfig>,
     Read<'s, LazyUpdate>,
@@ -129,7 +50,7 @@ impl<'s> System<'s> for DropLift {
     self.command_reader = Some(res.fetch_mut::<CommandChannel>().register_reader());
   }
 
-  fn run(&mut self, (entities, commands, matriarchs, transforms, family_components, walkers, colliders, generators, mut physics_world, physics_config, updater): Self::SystemData) {
+  fn run(&mut self, (entities, commands, matriarchs, transforms, walkers, mut physics_world, physics_config, updater): Self::SystemData) {
     let mut drop_lift = false;
     for command in commands.read(self.command_reader.as_mut().unwrap()) {
       match command {
@@ -143,30 +64,8 @@ impl<'s> System<'s> for DropLift {
         if entities.is_alive(e) {
           debug!("Dropping lift on Matriarch {:?}", e);
 
-          //Get all the bodies we want to affect with this lift
-          let mut bodies = Vec::new();
-          for (c, _) in (&colliders, &family_components).join() {
-            bodies.push(c.body_handle);
-          }
-
-          let dir = match w.direction {
-            Direction::Left => -1.0,
-            _ => 1.0,
-          };
-
-          let force_x = physics_config.lift_force.x * dir;
-          let force_rot = physics_config.lift_force_rotation * dir;
-
-          let lift = LiftForce::new(
-            physics_config.lift_width * SCALE_METERS_PER_PIXEL,
-            physics_config.lift_height * SCALE_METERS_PER_PIXEL,
-            Point2::new(t.translation.x * SCALE_METERS_PER_PIXEL,
-              (t.translation.y + physics_config.lift_y_offset) * SCALE_METERS_PER_PIXEL),
-            Force::new(naVector2::new(force_x, physics_config.lift_force.y), force_rot),
-            bodies);
-
-          let fg = ForceGeneratorComponent {
-            force_generator_handle: physics_world.world.add_force_generator(lift),
+          let la = LaunchArea {
+            direction: w.direction,
           };
 
           let shape = ShapeComponent {
@@ -182,25 +81,18 @@ impl<'s> System<'s> for DropLift {
           transform.rotation = Quaternion::from(Euler { x: Deg(0.0), y: Deg(0.0), z: Deg(90.0) })
                              * Quaternion::from(Euler { x: Deg(0.0), y: Deg(90.0), z: Deg(0.0) });
 
+          let sensor = physics_world.create_ground_box_sensor(
+            &Vector2::new(transform.translation.x, transform.translation.y), //Pos
+            &Vector2::new(physics_config.change_direction_width * 0.5, physics_config.change_direction_height * 0.5), //Size
+            90.0);
+
           updater
             .create_entity(&entities)
-            .with(fg)
+            .with(la)
             .with(shape)
             .with(transform)
+            .with(sensor)
             .build();
-        }
-      }
-    }
-
-    //TODO: Move this to it's own system or inside spawner system
-    //Update lifts
-    for g in (&generators).join() {
-      let mut fg = physics_world.world.force_generator_mut(g.force_generator_handle);
-      if let Ok(lift) = fg.downcast_mut::<LiftForce>() {
-        for (c, _) in (&colliders, &family_components).join() {
-          if !lift.bodies.contains(&c.body_handle) {
-            lift.bodies.push(c.body_handle);
-          }
         }
       }
     }

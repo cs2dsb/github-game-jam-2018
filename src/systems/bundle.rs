@@ -22,6 +22,7 @@ use super::Indicator;
 use super::DeadlyArea;
 use super::Age;
 use super::MatriarchPromote;
+use super::LaunchArea;
 
 pub struct GameBundle;
 
@@ -63,6 +64,12 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameBundle {
         "drop_direction_changer_system",
       ]);
       builder.add(DeadlyArea::default(), "deadly_area_system", &[
+        "physics_step_system",
+        "drop_cube_system",
+        "drop_lift_system",
+        "drop_direction_changer_system",
+      ]);
+      builder.add(LaunchArea::default(), "launch_area_system", &[
         "physics_step_system",
         "drop_cube_system",
         "drop_lift_system",

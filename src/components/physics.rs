@@ -14,9 +14,6 @@ use nphysics2d::{
     BodyHandle,
     ColliderHandle,
   },
-  force_generator::{
-    ForceGeneratorHandle,
-  }
 };
 
 use nalgebra::{
@@ -77,11 +74,6 @@ impl Collider {
     //TODO: I don't know what this will do if alpha is outside 0-1
     transform.rotation.nlerp(self.transform_next.rotation, alpha);
   }
-}
-
-#[derive(Debug, Clone)]
-pub struct ForceGenerator {
-  pub force_generator_handle: ForceGeneratorHandle,
 }
 
 //Non clamping lerp. Allows output to go beyond y2 which is probably reasonable for physics lerping but not everything

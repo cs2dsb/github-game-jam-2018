@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+//TODO: This resource uses both cgmath and nalgebra. Amethyst is moving to nalgebra so this is a temporary cludge.
 use amethyst::{
   core::cgmath::{
     Vector2 as CVector2,
@@ -91,19 +92,14 @@ impl PhysicsWorld {
   }
 
   pub fn get_entity_for_collider(&self, collider_handle: &ColliderHandle) -> Option<Entity> {
-    if let Some(e) = self.collider_entity_map.get(collider_handle) {
-      Some(e.clone())
-    } else {
-      None
-    }
+    self
+      .collider_entity_map
+      .get(collider_handle)
+      .map(|e| e.clone())
   }
 
   pub fn get_body_for_collider(&self, collider_handle: &ColliderHandle) -> Option<&BodyHandle> {
     self.collider_body_map.get(collider_handle)
-    //if let Some(bh) = self.collider_body_map.get(collider_handle) {
-    //} else {
-    //  None
-    //}
   }
 
   #[allow(dead_code)]
