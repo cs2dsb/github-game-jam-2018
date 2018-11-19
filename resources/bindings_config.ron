@@ -4,8 +4,9 @@
     "volume": Emulated(pos: Key(Add), neg: Key(Subtract)),
   },
   actions: {
-    "one": [[Key(Key1)],[Key(Numpad1)]],
-    "two": [[Key(Key2)],[Key(Numpad2)]],
-    "three": [[Key(Key3)],[Key(Numpad3)]],
+    "drop_cube": [[Key(Key1)],[Key(Numpad1)]],
+    "drop_lift": [[Key(Key2)],[Key(Numpad2)]],
+    "drop_direction_changer": [[Key(Key3)],[Key(Numpad3)]],
+    "ram": [[Key(Key4)],[Key(Numpad4)]],
   },
 )

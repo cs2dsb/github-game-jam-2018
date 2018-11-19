@@ -20,6 +20,13 @@ pub struct CuboidSet {
 pub struct CameraOverrides {
   pub offset: Option<Vector3<f32>>,
   pub convergence_speed: Option<f32>,
+  pub position: Option<Vector3<f32>>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct SpawnOverides {
+  pub freq: f32,
+  pub max: u32,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -30,6 +37,8 @@ pub struct LevelConfig {
   pub deadly_areas: Option<CuboidSet>,
   pub exits: Option<CuboidSet>,
   pub spawners: Option<CuboidSet>,
+  pub blocks: Option<CuboidSet>,
+  pub spawn_overrides: Option<SpawnOverides>,
   pub camera_overrides: Option<CameraOverrides>,
 }
 

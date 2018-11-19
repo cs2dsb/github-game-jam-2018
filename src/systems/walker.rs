@@ -56,6 +56,10 @@ impl<'s> System<'s> for Walker {
     let mut right = None;
 
     for (walker, collider) in (&walkers, &colliders).join() {
+      //There is some flakeyness around waking bodies so this makes sure no
+      //walkers ever go to sleep
+      physics_world.world.activate_body(collider.body_handle);
+
       if let Some(dir) = match walker.direction {
         Direction::Right => {
           if right.is_none() {

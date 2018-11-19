@@ -127,6 +127,7 @@ impl<'s> System<'s> for DropDirectionChanger {
       if let Some(body) = physics_world.world.rigid_body_mut(c) {
         let mut velocity = *body.velocity();
         velocity.linear.x = 0.0;
+        velocity.angular = 0.0;
         body.set_velocity(velocity);
       }
     }

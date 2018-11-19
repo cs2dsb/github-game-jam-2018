@@ -14,6 +14,9 @@ pub struct PhysicsConfig {
   pub exit_height: f32,
   //How much acceleration the walker system applies
   pub walker_force: f32,
+  pub ram_velocity: Vector2<f32>,
+  pub ram_density: f32,
+  pub ram_life: f32,
 }
 
 impl Default for PhysicsConfig {
@@ -30,6 +33,9 @@ impl Default for PhysicsConfig {
       exit_width: 50.0,
       exit_height: 50.0,
       walker_force: 5.0,
+      ram_velocity: Vector2::new(10.0, 0.0),
+      ram_density: 100.0,
+      ram_life: 0.5,
     }
   }
 }

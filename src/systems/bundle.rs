@@ -23,6 +23,8 @@ use super::DeadlyArea;
 use super::Age;
 use super::MatriarchPromote;
 use super::LaunchArea;
+use super::ConstantVelocity;
+use super::DropRam;
 
 pub struct GameBundle;
 
@@ -31,6 +33,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameBundle {
       builder.add(PhysicsStep::default(), "physics_step_system", &[]);
 
       builder.add(Walker::default(), "walker_system", &[]);
+      builder.add(ConstantVelocity::default(), "constant_velocity_system", &[]);
       builder.add(LogFps::default(), "log_fps_system", &[]);
       builder.add(BasicVelocity::default(), "basic_velocity_system", &[]);
       builder.add(CameraMovement::default(), "camera_movement_system", &[]);
@@ -45,6 +48,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameBundle {
       //matriarch before it's destroyed
       builder.add(DropCube::default(), "drop_cube_system", &["player_input_system"]);
       builder.add(DropLift::default(), "drop_lift_system", &["player_input_system"]);
+      builder.add(DropRam::default(), "drop_ram_system", &["player_input_system"]);
       builder.add(DropDirectionChanger::default(), "drop_direction_changer_system", &["player_input_system"]);
       builder.add(Spawner::default(), "spawner_system", &[]);
       builder.add(Murder::default(), "murder_system", &[
@@ -52,6 +56,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameBundle {
         "drop_cube_system",
         "drop_lift_system",
         "drop_direction_changer_system",
+        "drop_ram_system",
       ]);
 
       //These depend on the player input to reduce the chance of the player trying to do something and the matriarch

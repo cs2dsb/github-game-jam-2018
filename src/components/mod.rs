@@ -21,6 +21,7 @@ mod indicator;
 mod deadly_area;
 mod age;
 mod launch_area;
+mod constant_velocity;
 
 pub use self::basic_velocity::*;
 pub use self::physics::*;
@@ -34,6 +35,7 @@ pub use self::indicator::*;
 pub use self::deadly_area::*;
 pub use self::age::*;
 pub use self::launch_area::*;
+pub use self::constant_velocity::*;
 
 //TODO: I've just used BTreeStorage for all of these as the specs book suggests it's ok as a general default.
 //  Think about using more appropriate storages at some point.
@@ -90,5 +92,9 @@ impl Component for Age {
 }
 
 impl Component for LaunchArea {
+  type Storage = BTreeStorage<Self>;
+}
+
+impl Component for ConstantVelocity {
   type Storage = BTreeStorage<Self>;
 }

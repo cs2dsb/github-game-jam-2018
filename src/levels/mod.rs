@@ -1,8 +1,10 @@
 use amethyst::{
   core::{
+    transform::components::Transform,
     cgmath::Vector2,
   },
   ecs::prelude::*,
+  controls::FlyControlTag,
 };
 
 use ::{
@@ -29,6 +31,7 @@ use ::{
 
 enum ObjectType {
   GroundCollider,
+  RigidBodyCollider,
   Sensor,
 }
 
@@ -69,6 +72,18 @@ impl Level {
     self.loaded = true;
   }
 
+  pub fn is_loaded(&self) -> bool {
+    self.loaded
+  }
+
+  pub fn current_level(&self) -> usize {
+    self.current_level
+  }
+
+  pub fn jump_to(&mut self, level: usize) {
+    self.current_level = level.min(self.levels.len() - 1);
+  }
+
   pub fn next(&mut self) {
     if self.is_more_levels() {
       self.current_level += 1;
@@ -100,13 +115,28 @@ impl Level {
     let prev = CameraOverrides {
       convergence_speed: Some(camera_config.convergence_speed),
       offset: Some(camera_config.offset),
+      //We don't want to restore the position
+      position: None,
     };
 
     if let Some(convergence_speed) = &overrides.convergence_speed {
       camera_config.convergence_speed = *convergence_speed;
     }
+
     if let Some(offset) = &overrides.offset {
       camera_config.offset = *offset;
+    }
+
+    //TODO: This doesn't work on the first level because the FlyControlTag hasn't been initialized
+    //due to async prefab loading in RunningState
+    //It's not really an issue since the prefab sets the pos for the first level anyway.
+    if let Some(position) = &overrides.position {
+      for (t, _) in (
+        &mut world.write_storage::<Transform>(),
+        &world.read_storage::<FlyControlTag>()).join() {
+
+        t.translation = *position;
+      }
     }
 
     prev
@@ -161,6 +191,11 @@ impl Level {
             rotation.unwrap_or(0.0)),
         ObjectType::Sensor =>
           physics_world.create_ground_box_sensor(
+            &Vector2::new(x, y),
+            &Vector2::new(width, height),
+            rotation.unwrap_or(0.0)),
+        ObjectType::RigidBodyCollider =>
+          physics_world.create_rigid_body_with_box_collider(
             &Vector2::new(x, y),
             &Vector2::new(width, height),
             rotation.unwrap_or(0.0)),
@@ -224,12 +259,21 @@ impl Level {
     );
   }
 
-  fn create_spawner(&self, world: &mut World, width: f32, height: f32, x: f32, y: f32, color: Option<Color>, rotation: Option<f32>) {
-    let (freq, max) = {
-      let config = world.read_resource::<SpawnerConfig>();
-      (config.frequency_default, config.max_default)
-    };
+  fn create_block(&self, world: &mut World, width: f32, height: f32, x: f32, y: f32, color: Option<Color>, rotation: Option<f32>) {
+    self.create_object(
+      world,
+      width,
+      height,
+      x,
+      y,
+      ObjectType::RigidBodyCollider,
+      color,
+      rotation,
+      None,
+    );
+  }
 
+  fn create_spawner(&self, world: &mut World, width: f32, height: f32, x: f32, y: f32, color: Option<Color>, rotation: Option<f32>, freq: f32, max: u32) {
     world
       .write_resource::<SpawnStats>()
       .total += max;
@@ -297,8 +341,33 @@ impl Level {
     }
 
     if let Some(ref set) = level.spawners {
+      let (freq, max) = {
+        if let Some(ref overrides) = level.spawn_overrides {
+          (overrides.freq, overrides.max)
+        } else {
+          let config = world.read_resource::<SpawnerConfig>();
+          (config.frequency_default, config.max_default)
+        }
+      };
+
       for o in &set.list {
         self.create_spawner(
+          world,
+          o.size.x,
+          o.size.y,
+          o.position.x,
+          o.position.y,
+          o.color.or(set.color),
+          o.rotation,
+          freq,
+          max,
+        );
+      }
+    }
+
+    if let Some(ref set) = level.blocks {
+      for o in &set.list {
+        self.create_block(
           world,
           o.size.x,
           o.size.y,
@@ -309,5 +378,6 @@ impl Level {
         );
       }
     }
+
   }
 }

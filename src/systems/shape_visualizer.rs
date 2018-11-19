@@ -47,12 +47,14 @@ impl<'s> System<'s> for ShapeVisualizer {
           (*color).into()
         } else {
           let color = RandomColor::new().to_rgb_array();
-          let color = [
+          let color = Color::new(
             color[0] as f32 / 255.0,
             color[1] as f32 / 255.0,
             color[2] as f32 / 255.0,
-          1.0];
-          color
+          1.0);
+          //Save the color (ram uses it to make the ram the same colour as the dying matriarch)
+          updater.insert(entity, color);
+          color.into()
         }
       };
       let material = create_colour_material(

@@ -35,9 +35,10 @@ impl<'s> System<'s> for PlayerInput {
         self.down_actions.remove(&action);
       } else if pressed {
         match action.as_ref() {
-          "one" => commands.single_write(Command::DropCube),
-          "two" => commands.single_write(Command::DropLift),
-          "three" => commands.single_write(Command::DropDirectionChanger),
+          "drop_cube" => commands.single_write(Command::DropCube),
+          "drop_lift" => commands.single_write(Command::DropLift),
+          "drop_direction_changer" => commands.single_write(Command::DropDirectionChanger),
+          "ram" => commands.single_write(Command::DropRam),
           o => debug!("Unhandled input action: {:?}", o),
         }
         //All other actions also kill the matriach (for now)

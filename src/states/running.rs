@@ -55,6 +55,7 @@ pub struct RunningState {
   level: Option<Level>,
   level_start: Option<Instant>,
   level_text_update_needed: bool,
+  level_load_frame: u64,
 }
 
 impl<'a, 'b> SimpleState<'a, 'b> for RunningState {
@@ -95,6 +96,8 @@ impl<'a, 'b> SimpleState<'a, 'b> for RunningState {
   }
   fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans<'a, 'b> {
     let world = &mut data.world;
+
+    self.check_and_load_level(world);
 
     //Fetch the entities for the ui fields
     if self.fps_display.is_none() {
@@ -257,6 +260,7 @@ impl RunningState {
       level: None,
       level_start: None,
       level_text_update_needed: false,
+      level_load_frame: 0,
     }
   }
 
@@ -274,15 +278,23 @@ impl RunningState {
       .build();
   }
 
+  fn update_load_level_frame(&mut self, world: &mut World) {
+    self.level_load_frame = world.read_resource::<Time>().frame_number() + 2;
+  }
+
   fn initialise_level(&mut self, world: &mut World) {
+    let mut start_level = None;
     if let Some(mut level) = self.level.take() {
       level.unload(world);
+      start_level = Some(level.current_level());
     }
+
     let mut level = Level::new(&world.read_resource::<LevelsConfig>());
-    level.load(world);
+    if let Some(start_level) = start_level {
+      level.jump_to(start_level);
+    }
     self.level = Some(level);
-    self.level_start = Some(Instant::now());
-    self.level_text_update_needed = true;
+    self.update_load_level_frame(world);
   }
 
   fn next_level(&mut self, world: &mut World) {
@@ -290,11 +302,27 @@ impl RunningState {
       if level.is_more_levels() {
         info!("Loading next level");
         level.next();
+        level.unload(world);
+      } else {
+        info!("No more levels");
+      }
+    }
+    self.update_load_level_frame(world);
+  }
+
+  fn check_and_load_level(&mut self, world: &mut World) {
+    let current_frame = world.read_resource::<Time>().frame_number();
+
+    if self.level_load_frame >= current_frame {
+      debug!("Skipping load {} >= {}", self.level_load_frame, current_frame);
+      return;
+    }
+
+    if let Some(ref mut level) = self.level {
+      if !level.is_loaded() {
         level.load(world);
         self.level_start = Some(Instant::now());
         self.level_text_update_needed = true;
-      } else {
-        info!("No more levels");
       }
     }
   }

@@ -41,7 +41,7 @@ pub const SCALE_PIXELS_PER_METER: FSize = 64.0;
 pub const SCALE_METERS_PER_PIXEL: FSize = 1.0 / SCALE_PIXELS_PER_METER;
 
 //Plucked from arse
-pub const MARGIN: FSize = 0.01 * SCALE_METERS_PER_PIXEL;
+pub const MARGIN: FSize = 0.05 * SCALE_METERS_PER_PIXEL;
 
 const TIMESTEP: f32 = 1.0/60.0;
 
@@ -236,6 +236,10 @@ impl PhysicsWorld {
   }
 
   pub fn create_rigid_body_with_box_collider(&mut self, pos: &CVector2<FSize>, size: &CVector2<FSize>, rotation: FSize) -> Collider {
+    self.create_rigid_body_with_box_collider_with_density(pos, size, rotation, 1.0)
+  }
+
+  pub fn create_rigid_body_with_box_collider_with_density(&mut self, pos: &CVector2<FSize>, size: &CVector2<FSize>, rotation: FSize, density: FSize) -> Collider {
     let shape = ShapeHandle::new(Cuboid::new(Vector2::new(
       //These are half extents
       size.x * 0.5 * SCALE_METERS_PER_PIXEL - MARGIN,
@@ -248,7 +252,7 @@ impl PhysicsWorld {
       rotation,
     );
 
-    let body_handle = self.world.add_rigid_body(pos, shape.inertia(1.0), shape.center_of_mass());
+    let body_handle = self.world.add_rigid_body(pos, shape.inertia(density), shape.center_of_mass());
     debug!("Created body: {:?}", body_handle);
 
     let collider_handle = self.world.add_collider(

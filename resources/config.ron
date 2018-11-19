@@ -10,12 +10,15 @@
     lift_height: 30.0,
     lift_y_offset: -15.0,
     lift_velocity: (x: 0.0, y: 3.3),
-    lift_velocity_rotation: 0.0,
+    lift_velocity_rotation: 10.1,
     change_direction_width: 10.0,
-    change_direction_height: 10.0,
+    change_direction_height: 30.0,
     exit_width: 50.0,
     exit_height: 50.0,
     walker_force: 2.0,
+    ram_velocity: (x: 10.0, y: 0.0),
+    ram_density: 100.0,
+    ram_life: 0.2,
   ),
   camera: (
     convergence_speed: 2.0,
@@ -28,8 +31,8 @@
   spawner: (
     frequency_min: 0.1,
     frequency_max: 4.0,
-    frequency_default: 0.5,
-    max_default: 15,
+    frequency_default: 0.8,
+    max_default: 500,
   ),
   sound: (
     volume: 0.25,
@@ -179,6 +182,82 @@
         ]),
         spawners: ( color: (r: 0.1, g: 0.1, b: 0.8, a: 1.0 ), list: [
           (size: (x: 30.0, y: 30.0, z: 0.1), position: (x: 50.0, y: 420.0, z: 0.0)),
+        ]),
+      ),
+      (
+        name: "Ramming speed",
+        description: "Press 4 to ram",
+        spawn_overrides: (freq: 2.0, max: 20),
+        camera_overrides: (convergence_speed: 0.0, position: (x: 250.0, y: 125.0, z: 300.0)),
+        walls: ( color: (r: 0.5, g: 0.5, b: 0.5, a: 1.0 ), list: [
+          (size: (x: 500.0, y: 10.0, z: 0.1), position: (x: 250.0, y: 5.0, z: 0.0)), //Bottom
+          (size: (x: 500.0, y: 10.0, z: 0.1), position: (x: 250.0, y: 245.0, z: 0.0)), //Top
+          (size: (x: 10.0, y: 250.0, z: 0.1), position: (x: 5.0, y: 125.0, z: 0.0)), //Left
+          (size: (x: 10.0, y: 250.0, z: 0.1), position: (x: 495.0, y: 125.0, z: 0.0)), //Right
+        ]),
+        exits: ( color: (r: 0.1, g: 0.8, b: 0.1, a: 1.0 ), list: [
+          (size: (x: 10.0, y: 240.0, z: 0.2), position: (x: 485.0, y: 120.0, z: 0.0)), //Right
+        ]),
+        spawners: ( color: (r: 0.1, g: 0.1, b: 0.8, a: 1.0 ), list: [
+          (size: (x: 30.0, y: 30.0, z: 0.1), position: (x: 50.0, y: 100.0, z: 0.0)),
+        ]),
+        blocks: ( list: [
+          (size: (x: 46.0, y: 225.0, z: 0.1), position: (x: 200.0, y: 115.0, z: 0.0)),
+        ]),
+      ),
+      (
+        name: "What a mess you made",
+        description: "",
+        spawn_overrides: (freq: 2.0, max: 20),
+        camera_overrides: (convergence_speed: 0.0, position: (x: 250.0, y: 125.0, z: 300.0)),
+        walls: ( color: (r: 0.5, g: 0.5, b: 0.5, a: 1.0 ), list: [
+          (size: (x: 500.0, y: 10.0, z: 0.1), position: (x: 250.0, y: 5.0, z: 0.0)), //Bottom
+          (size: (x: 500.0, y: 10.0, z: 0.1), position: (x: 250.0, y: 245.0, z: 0.0)), //Top
+          (size: (x: 10.0, y: 250.0, z: 0.1), position: (x: 5.0, y: 125.0, z: 0.0)), //Left
+          (size: (x: 10.0, y: 250.0, z: 0.1), position: (x: 495.0, y: 125.0, z: 0.0)), //Right
+        ]),
+        exits: ( color: (r: 0.1, g: 0.8, b: 0.1, a: 1.0 ), list: [
+          (size: (x: 10.0, y: 240.0, z: 0.2), position: (x: 485.0, y: 120.0, z: 0.0)), //Right
+        ]),
+        spawners: ( color: (r: 0.1, g: 0.1, b: 0.8, a: 1.0 ), list: [
+          (size: (x: 30.0, y: 30.0, z: 0.1), position: (x: 50.0, y: 100.0, z: 0.0)),
+        ]),
+        blocks: ( list: [
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 200.0, y: 20.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 200.0, y: 40.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 200.0, y: 60.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 200.0, y: 80.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 200.0, y: 100.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 200.0, y: 120.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 200.0, y: 140.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 200.0, y: 160.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 200.0, y: 180.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 200.0, y: 200.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 200.0, y: 220.0, z: 0.0)),
+
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 220.0, y: 20.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 220.0, y: 40.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 220.0, y: 60.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 220.0, y: 80.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 220.0, y: 100.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 220.0, y: 120.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 220.0, y: 140.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 220.0, y: 160.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 220.0, y: 180.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 220.0, y: 200.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 220.0, y: 220.0, z: 0.0)),
+
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 240.0, y: 20.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 240.0, y: 40.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 240.0, y: 60.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 240.0, y: 80.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 240.0, y: 100.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 240.0, y: 120.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 240.0, y: 140.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 240.0, y: 160.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 240.0, y: 180.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 240.0, y: 200.0, z: 0.0)),
+          (size: (x: 20.0, y: 20.0, z: 0.1), position: (x: 240.0, y: 220.0, z: 0.0)),
         ]),
       ),
     ],
