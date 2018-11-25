@@ -151,5 +151,45 @@ Container (
                 align: TopLeft,
             ),
         ),
+
+        Image(
+            transform: (
+                id: "lift_icon",
+                y: 40.,
+                x: 40.,
+                width: 64.,
+                height: 64.,
+                anchor: BottomLeft,
+            ),
+            image: (
+                image: File("texture/lift_icon.png", Png, (channel: Srgb)),
+            )
+        ),
+        Image(
+            transform: (
+                id: "change_direction_icon",
+                y: 40.,
+                x: 96.,
+                width: 64.,
+                height: 64.,
+                anchor: BottomLeft,
+            ),
+            image: (
+                image: File("texture/change_direction_icon.png", Png, (channel: Srgb)),
+            )
+        ),
+        Image(
+            transform: (
+                id: "ram_icon",
+                y: 40.,
+                x: 158.,
+                width: 64.,
+                height: 64.,
+                anchor: BottomLeft,
+            ),
+            image: (
+                image: File("texture/ram_icon.png", Png, (channel: Srgb)),
+            )
+        ),
     ]
 )
