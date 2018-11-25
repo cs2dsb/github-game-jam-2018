@@ -37,6 +37,34 @@
   sound: (
     volume: 0.0,
   ),
+  sprites: (
+    sheet_width: 1280,
+    sheet_height: 1280,
+    sprites: [
+      (
+        name: "lift",
+        sheet_width: 128,
+        sheet_height: 128,
+        sheet_x: 0,
+        sheet_y: 0,
+        scaled_width: 16,
+        scaled_height: 16,
+        scaled_x: 0,
+        scaled_y: 0,
+      ),
+      (
+        name: "change_direction",
+        sheet_width: 128,
+        sheet_height: 128,
+        sheet_x: 128,
+        sheet_y: 0,
+        scaled_width: 16,
+        scaled_height: 16,
+        scaled_x: 0,
+        scaled_y: 0,
+      ),
+    ],
+  ),
   levels: (
     start_level: 0,
     levels: [

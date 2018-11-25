@@ -220,7 +220,7 @@ impl PhysicsWorld {
     let to_parent = Isometry2::new(Vector2::new(
       pos.x * SCALE_METERS_PER_PIXEL,
       pos.y * SCALE_METERS_PER_PIXEL),
-      rotation,
+      -rotation, //Rotation is not the way you'd think, presumably because this is to_parent not from_parent
     );
     let collider_handle = self.world.add_sensor(
       shape,
@@ -249,7 +249,7 @@ impl PhysicsWorld {
     let pos = Isometry2::new(Vector2::new(
       pos.x * SCALE_METERS_PER_PIXEL,
       pos.y * SCALE_METERS_PER_PIXEL),
-      rotation,
+      -rotation, //Rotation is not the way you'd think, presumably because this is to_parent not from_parent
     );
 
     let body_handle = self.world.add_rigid_body(pos, shape.inertia(density), shape.center_of_mass());

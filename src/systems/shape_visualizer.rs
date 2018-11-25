@@ -13,6 +13,7 @@ use amethyst::{
     MeshHandle,
     PosNormTex,
     Texture,
+    SpriteRender,
   },
 };
 
@@ -36,11 +37,12 @@ impl<'s> System<'s> for ShapeVisualizer {
     ReadExpect<'s, AssetStorage<Texture>>,
     ReadExpect<'s, AssetStorage<Mesh>>,
     ReadStorage<'s, MeshHandle>,
+    ReadStorage<'s, SpriteRender>,
   );
 
-  fn run(&mut self, (entities, shapes, colors, updater, material_defaults, loader, texture_storage, mesh_storage, meshes): Self::SystemData) {
-    //Create meshes for shapes that don't have them
-    for (entity, shape, _) in (&entities, &shapes, !&meshes).join() {
+  fn run(&mut self, (entities, shapes, colors, updater, material_defaults, loader, texture_storage, mesh_storage, meshes, sprites): Self::SystemData) {
+    //Create meshes for shapes that don't have either a mesh or a sprite already
+    for (entity, shape, _, _) in (&entities, &shapes, !&meshes, !&sprites).join() {
       //Material
       let color = {
         if let Some(color) = colors.get(entity) {

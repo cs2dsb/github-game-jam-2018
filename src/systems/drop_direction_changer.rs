@@ -7,7 +7,6 @@ use amethyst::{
       Vector2,
     },
   },
-  renderer::Shape,
 };
 
 use ::{
@@ -15,7 +14,6 @@ use ::{
     Matriarch,
     Walker,
     Collider,
-    Shape as ShapeComponent,
     ChangeDirection as ChangeDirectionComponent,
   },
   config::PhysicsConfig,
@@ -23,6 +21,7 @@ use ::{
     Command,
     CommandChannel,
     PhysicsWorld,
+    Sprites,
   },
 };
 
@@ -42,6 +41,7 @@ impl<'s> System<'s> for DropDirectionChanger {
     ReadStorage<'s, Collider>,
     Write<'s, PhysicsWorld>,
     Read<'s, PhysicsConfig>,
+    ReadExpect<'s, Sprites>,
     Read<'s, LazyUpdate>,
   );
 
@@ -50,7 +50,7 @@ impl<'s> System<'s> for DropDirectionChanger {
     self.command_reader = Some(res.fetch_mut::<CommandChannel>().register_reader());
   }
 
-  fn run(&mut self, (entities, commands, matriarchs, transforms, mut walkers, change_direction_components, colliders, mut physics_world, physics_config, updater): Self::SystemData) {
+  fn run(&mut self, (entities, commands, matriarchs, transforms, mut walkers, change_direction_components, colliders, mut physics_world, physics_config, sprites, updater): Self::SystemData) {
     let mut drop_direction_changer = false;
     for command in commands.read(self.command_reader.as_mut().unwrap()) {
       match command {
@@ -70,21 +70,14 @@ impl<'s> System<'s> for DropDirectionChanger {
           //  Direction::Left => 180.0,
           //};
 
-          let shape = ShapeComponent {
-            shape: Shape::Cone(10),
-            scale: (2.0, 2.0, 2.0),
-          };
+          let sprite = sprites.change_direction.clone();
 
           let mut transform = t.clone();
-          transform.translation = t.translation;
-          //TODO: Rotation doesn't work because the collider pos/rot is written to the transform
-          //transform.rotation = Quaternion::from(Euler { x: Deg(0.0), y: Deg(0.0), z: Deg(z_rot) });
-          //                   * Quaternion::from(Euler { x: Deg(0.0), y: Deg(90.0), z: Deg(0.0) });
 
           let sensor = physics_world.create_ground_box_sensor(
             &Vector2::new(transform.translation.x, transform.translation.y), //Pos
             &Vector2::new(physics_config.change_direction_width * 0.5, physics_config.change_direction_height * 0.5), //Size
-            90.0);
+            0.0);
 
           let change_direction = ChangeDirectionComponent {
             direction: direction,
@@ -92,7 +85,7 @@ impl<'s> System<'s> for DropDirectionChanger {
 
           updater
             .create_entity(&entities)
-            .with(shape)
+            .with(sprite)
             .with(transform)
             .with(sensor)
             .with(change_direction)
