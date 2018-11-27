@@ -20,6 +20,7 @@ use ::{
   },
 };
 
+///Checks for proximity events between exits and walkers and "saves" the walkers that touch an exit.
 #[derive(Default)]
 pub struct Exit;
 

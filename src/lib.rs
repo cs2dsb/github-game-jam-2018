@@ -26,7 +26,6 @@ use amethyst::{
     application_root_dir,
   },
   input::InputBundle,
-  //audio::AudioBundle,
   assets::PrefabLoaderSystem,
 };
 
@@ -79,7 +78,6 @@ fn create_logger(level: LevelFilter) {
 }
 
 pub fn run() -> Result<(), amethyst::Error> {
-
   let app_root = application_root_dir();
   let assets_path = format!("{}/assets/", app_root);
   let binding_path = format!("{}/resources/bindings_config.ron", app_root);
@@ -98,13 +96,8 @@ pub fn run() -> Result<(), amethyst::Error> {
 
   let game_data = configure_rendering(
     register_systems(game_data)?, display_config)?
-    //.with_bundle(fly_control_bundle)?
     .with(PrefabLoaderSystem::<RunningPrefabData>::default(), "", &[]);
 
-    //.with_bundle(AudioBundle::new(
-      //|music: &mut audio::Music| music.music.next() //Music in a loop
-    //  |_music: &mut audio::Music| None //No music
-    //))?
 
   let mut game = Application::build(assets_path, LoadingState::default())?
     .with_resource(game_config.pawn)
@@ -115,6 +108,7 @@ pub fn run() -> Result<(), amethyst::Error> {
     .with_resource(game_config.sprites)
     .with_resource(game_config.levels)
     .build(game_data)?;
+
   game.run();
   Ok(())
 }

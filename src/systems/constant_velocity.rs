@@ -18,6 +18,7 @@ use ::{
   },
 };
 
+//Applies a constant velocity to any collider with a constant velocity component
 #[derive(Default)]
 pub struct ConstantVelocity;
 

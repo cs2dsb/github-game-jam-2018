@@ -1,5 +1,3 @@
-///Finds colliders without meshes and creates meshes for them
-
 use amethyst::{
   core::transform::components::Transform,
   ecs::prelude::*,
@@ -14,6 +12,14 @@ use ::{
   },
 };
 
+//TODO: the lerping appears to do what you'd expect (if you set the timestep to a large number like 10 seconds
+// you can see the objects move along the path between steps). HOWEVER, physics objects still jerk around
+// sometimes. It's very visible if you turn logging up to debug; writing to stdout appears to be causing hitches.
+// I thought fixed timesteps + lerping would smooth this out but apparently not.
+// I haven't spent too long on it as there is work ongoing to integrate nphysics and specs properly and when that
+// lands much/all of this will be obsolete.
+
+///Updates the transforms of entities with colliders. Peforms lerping between n-1 and n frame.
 #[derive(Default)]
 pub struct PhysicsTransformUpdate;
 

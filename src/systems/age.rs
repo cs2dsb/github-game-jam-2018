@@ -11,6 +11,7 @@ use ::{
   resources::SpawnStats,
 };
 
+///Adds this frames delta time to all Age components
 #[derive(Default)]
 pub struct Age;
 

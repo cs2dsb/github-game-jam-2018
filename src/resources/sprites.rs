@@ -32,6 +32,7 @@ const CHANGE_DIRECTION_SPRITE_NAME: &'static str = "change_direction";
 // This is needed to link the texture to the sprite_sheet.
 const TEXTURE_ID: u64 = 0;
 
+///Resource that contains templates for the sprites the game uses.
 pub struct Sprites {
   pub lift: SpriteRender,
   pub change_direction: SpriteRender,

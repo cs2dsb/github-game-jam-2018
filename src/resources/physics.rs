@@ -45,6 +45,9 @@ pub const MARGIN: FSize = 0.05 * SCALE_METERS_PER_PIXEL;
 
 const TIMESTEP: f32 = 1.0/60.0;
 
+///Resource that contains the nphysics world and manages collisions.
+//It's a bit jankey but nphysics has a project underway to integrate it properly with specs
+// which will replace this stuff.
 pub struct PhysicsWorld {
   pub world: World<FSize>,
   time_accumulator: f32,

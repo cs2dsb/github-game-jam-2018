@@ -1,4 +1,3 @@
-///Finds colliders without meshes and creates meshes for them
 
 use amethyst::{
   assets::{
@@ -23,6 +22,7 @@ use ::components::{
   Color,
 };
 
+///Finds shapes without meshes and creates meshes for them
 #[derive(Default)]
 pub struct ShapeVisualizer;
 

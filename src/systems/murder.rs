@@ -14,6 +14,7 @@ use ::{
   },
 };
 
+///Kills the current matriarch.
 #[derive(Default)]
 pub struct Murder {
   command_reader: Option<ReaderId<Command>>,

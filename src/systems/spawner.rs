@@ -28,6 +28,7 @@ use ::{
   },
 };
 
+///Updates spawner components and spawns walkers when they are ready. Destroys spawners once max spawn count is reached.
 pub struct Spawner {
   collision_groups: CollisionGroups,
 }

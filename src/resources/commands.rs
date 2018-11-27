@@ -1,5 +1,6 @@
 use amethyst::shrev::EventChannel;
 
+///Commands that various systems listen for. Most are user input.
 #[derive(Debug)]
 pub enum Command {
   DropCube,
@@ -15,6 +16,8 @@ pub enum Command {
   PreviousLevel,
 }
 
+///Does the specified command also kill the matriarch?
+//TODO: Bit jankey.
 pub fn also_kills(cmd: &Command) -> bool {
   match cmd {
     &Command::DropCube => true,
@@ -30,4 +33,5 @@ pub fn also_kills(cmd: &Command) -> bool {
   }
 }
 
+///This is the channel resource commands get sent to
 pub type CommandChannel = EventChannel<Command>;

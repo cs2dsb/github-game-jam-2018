@@ -25,6 +25,8 @@ use ::{
   },
 };
 
+///Drops a direction changer sensor on the matriarch. Also does the proximity checking between cd sensors and walkers.
+//TODO: Split the proximity checking into another system.
 #[derive(Default)]
 pub struct DropDirectionChanger {
   command_reader: Option<ReaderId<Command>>,

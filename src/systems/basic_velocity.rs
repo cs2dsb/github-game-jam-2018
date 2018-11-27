@@ -8,6 +8,7 @@ use amethyst::{
 
 use ::components::BasicVelocity as BasicVelocityComponent;
 
+///Adds velocity*delta to transform each frame
 #[derive(Default)]
 pub struct BasicVelocity;
 

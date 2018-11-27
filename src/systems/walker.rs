@@ -19,6 +19,7 @@ use nalgebra::{
   zero,
 };
 
+///Adds colliders with the walker component to a force generator to cause them to walk left or right.
 pub struct Walker {
   right_force: Option<ForceGeneratorHandle>,
   left_force: Option<ForceGeneratorHandle>,
@@ -44,6 +45,7 @@ impl<'s> System<'s> for Walker {
   fn run(&mut self, (walkers, colliders, mut physics_world, physics_config): Self::SystemData) {
     //TODO: Couldn't find a way to add and remove body parts from force generators so destroying them every frame instead
     // This doesn't seem great
+    // Can fix this with a custom force generator like the first attempt at a lift.
     if let Some(right) = self.right_force.take() {
       physics_world.world.remove_force_generator(right);
     }

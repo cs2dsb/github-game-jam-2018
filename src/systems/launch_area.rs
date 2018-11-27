@@ -34,7 +34,7 @@ use ::{
   },
 };
 
-//Exists to provide PartialEq so the comparrison only looks at the handle
+///Exists to provide PartialEq so the comparrison only looks at the handle
 #[derive(Debug)]
 struct ToLaunch {
   direction: Direction,
@@ -47,6 +47,7 @@ impl PartialEq for ToLaunch {
   }
 }
 
+///Checks proximity events between launch areas and walkers and applies a velocity to the walkers that overlap.
 #[derive(Default)]
 pub struct LaunchArea;
 
@@ -93,6 +94,7 @@ impl<'s> System<'s> for LaunchArea {
     //No point playing the same sound multiple times in the same frame
     if to_launch.len() > 0 {
       if let Some(output) = &output {
+        //TODO: current this sound gets played a bunch of times because the overlap happens for more than one frame.
         sounds.play_lift(&source_storage, output);
       }
 

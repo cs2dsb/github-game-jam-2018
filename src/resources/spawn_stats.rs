@@ -1,3 +1,4 @@
+///Resource that tracks how many creeps have been spawned/died/saved/etc.
 #[derive(Default)]
 pub struct SpawnStats {
   pub total: u32,

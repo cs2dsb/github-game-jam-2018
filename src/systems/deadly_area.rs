@@ -20,6 +20,7 @@ use ::{
   },
 };
 
+///Checks for proximity events between walkers and deadly areas. Kills any walker that touches one
 #[derive(Default)]
 pub struct DeadlyArea;
 

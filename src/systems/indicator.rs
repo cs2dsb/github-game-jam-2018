@@ -21,6 +21,7 @@ use ::{
   },
 };
 
+///Adds indicators to matriarchs, moves existing indicators to track their target and removes indicators when the target dies.
 #[derive(Default)]
 pub struct Indicator;
 

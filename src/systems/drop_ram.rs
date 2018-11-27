@@ -29,6 +29,7 @@ use ::{
 };
 
 
+///Drops a ram on the matriarch. It's made to appear like the ram is the matriarch but it's actually a different entity.
 #[derive(Default)]
 pub struct DropRam {
   command_reader: Option<ReaderId<Command>>,

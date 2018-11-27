@@ -22,6 +22,7 @@ use ::{
   },
 };
 
+///Drops a lift sensor on the matriarch.
 #[derive(Default)]
 pub struct DropLift {
   command_reader: Option<ReaderId<Command>>,

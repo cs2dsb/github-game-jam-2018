@@ -40,6 +40,7 @@ const UI_UPDATE_FRAMES: u64 = 20; //How many frames to wait between ui updates
 
 pub type RunningPrefabData = BasicScenePrefab<Vec<PosNormTex>>;
 
+///Main state of the game. Main work done here is updating the gui.
 pub struct RunningState {
   running_ui_handle: Handle<UiPrefab>,
   running_prefab_handle: Handle<Prefab<RunningPrefabData>>,
@@ -130,24 +131,6 @@ impl<'a, 'b> SimpleState<'a, 'b> for RunningState {
         }
       });
     }
-
-    /*
-    if self.level_text_update_needed {
-      let mut ui_text = world.write_storage::<UiText>();
-      if let (Some(level), Some(name_display), Some(description_display)) =
-        (&self.level, &self.name_display, &self.description_display)
-      {
-        self.level_text_update_needed = false;
-        if let Some(name_display) = ui_text.get_mut(*name_display) {
-          name_display.text = level.name();
-        }
-        if let Some(description_display) = ui_text.get_mut(*description_display) {
-          description_display.text = level.description();
-        }
-      }
-    }
-    */
-
 
     //Update the ui values
     if world.read_resource::<Time>().frame_number() % UI_UPDATE_FRAMES == 0 {

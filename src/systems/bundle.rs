@@ -27,6 +27,7 @@ use super::ConstantVelocity;
 use super::DropRam;
 use super::Level;
 
+///Bundle containing all user systems for the game
 pub struct GameBundle;
 
 impl<'a, 'b> SystemBundle<'a, 'b> for GameBundle {

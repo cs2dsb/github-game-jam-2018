@@ -12,6 +12,7 @@ use ::resources::{
   also_kills,
 };
 
+///Checks the state of player input and sends commands for other systems to react to.
 #[derive(Default)]
 pub struct PlayerInput {
   down_actions: HashSet<String>,

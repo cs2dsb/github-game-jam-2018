@@ -1,4 +1,3 @@
-///Finds colliders without meshes and creates meshes for them
 
 use amethyst::{
   ecs::prelude::*,
@@ -20,6 +19,7 @@ use ::{
 
 const Z_SIZE: f32 = 0.15;
 
+///Finds colliders without shapes and creates shapes for them
 #[derive(Default)]
 pub struct PhysicsVisualizer;
 

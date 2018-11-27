@@ -19,6 +19,7 @@ use ::{
 };
 
 
+///Drops a cube on the matriarch. Current no player input triggers this.
 #[derive(Default)]
 pub struct DropCube {
   command_reader: Option<ReaderId<Command>>,

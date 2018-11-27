@@ -6,6 +6,7 @@ use ::components::{
   Matriarch,
 };
 
+///Promotes the oldest creep if there is no matriarch.
 #[derive(Default)]
 pub struct MatriarchPromote;
 

@@ -22,6 +22,7 @@ impl Default for PeriodicLogTimer {
   }
 }
 
+///Logs the fps value to stdout every 2 seconds
 #[derive(Default)]
 pub struct LogFps;
 

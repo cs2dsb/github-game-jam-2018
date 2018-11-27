@@ -11,6 +11,7 @@ pub enum LoadState {
   PhysicsCleanup,
 }
 
+///Resource that holds the list of levels and tracks which one is loaded
 pub struct Level {
   pub current_level: usize,
   pub levels: Vec<LevelConfig>,

@@ -23,6 +23,7 @@ use ::{
   },
 };
 
+///Moves the camera. Tracks the matriarch (or the exit after some have exited).
 #[derive(Default)]
 pub struct CameraMovement {
   command_reader: Option<ReaderId<Command>>,

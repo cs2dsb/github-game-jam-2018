@@ -38,6 +38,7 @@ use super::{
   RunningPrefabData,
 };
 
+///Loads required assets and makes sure everythin is ready before moving to the running state.
 #[derive(Default)]
 pub struct LoadingState {
   progress: ProgressCounter,

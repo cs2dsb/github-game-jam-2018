@@ -41,6 +41,7 @@ enum ObjectType {
   Sensor,
 }
 
+///Manages the level. Reloads the config file containing levels, creates and destroys entities when the level starts and ends.
 #[derive(Default)]
 pub struct Level {
   command_reader: Option<ReaderId<Command>>,
