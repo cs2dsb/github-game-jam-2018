@@ -5,6 +5,7 @@ use amethyst::{
   },
   core::transform::TransformBundle,
   audio::AudioBundle,
+  Error,
 };
 
 use ::resources::Sounds;
@@ -64,7 +65,7 @@ pub use self::level::*;
 //  aren't scattered about but it also probably doesn't make sense to configure everything
 //  inside systems...
 //Registers game systems and any core systems they depend on
-pub fn register_systems<'a, 'b>(builder: GameDataBuilder<'a, 'b>) -> Result<GameDataBuilder<'a, 'b>, amethyst::Error> {
+pub fn register_systems<'a, 'b>(builder: GameDataBuilder<'a, 'b>) -> Result<GameDataBuilder<'a, 'b>, Error> {
   builder
     .with(FPSCounterSystem, "fps_counter_system", &[])
     .with_bundle(GameBundle)?

@@ -17,10 +17,11 @@ use amethyst::{
     DrawUi,
     UiBundle,
   },
+  Error,
 };
 
 //Configures render passes and registeres rendering related systems
-pub fn configure_rendering<'a, 'b>(builder: GameDataBuilder<'a, 'b>, display_config: DisplayConfig) -> Result<GameDataBuilder<'a, 'b>, amethyst::Error> {
+pub fn configure_rendering<'a, 'b>(builder: GameDataBuilder<'a, 'b>, display_config: DisplayConfig) -> Result<GameDataBuilder<'a, 'b>, Error> {
   let pipe = Pipeline::build().with_stage(
     Stage::with_backbuffer()
       .clear_target([0.05, 0.05, 0.05, 1.0], 1.0)

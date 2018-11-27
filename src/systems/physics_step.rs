@@ -59,7 +59,7 @@ impl<'s> System<'s> for PhysicsStep {
     self.dirty.clear();
     colliders.populate_removed(&mut self.removed_reader_id.as_mut().unwrap(), &mut self.dirty);
 
-    for (index) in (&self.dirty).join() {
+    for index in (&self.dirty).join() {
       let index = index as usize;
       if let Some(collider) = self.collider_cache.remove(&index) {
         physics_world.destroy_collider(collider);

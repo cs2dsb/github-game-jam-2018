@@ -1,5 +1,3 @@
-#![feature(custom_attribute)]
-
 extern crate amethyst;
 extern crate fern;
 extern crate chrono;
