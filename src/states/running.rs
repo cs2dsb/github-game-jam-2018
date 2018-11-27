@@ -1,5 +1,3 @@
-use std::time::Instant;
-
 use amethyst::{
   assets::{
     Prefab,
@@ -28,14 +26,14 @@ use amethyst::{
 use ::{
   config::{
     SpawnerConfig,
-    LevelsConfig,
-    load_game_config,
   },
-  resources::SpawnStats,
+  resources::{
+    SpawnStats,
+    Level,
+  },
   components::{
     Spawner,
   },
-  levels::*,
 };
 
 const UI_UPDATE_FRAMES: u64 = 20; //How many frames to wait between ui updates
@@ -52,10 +50,6 @@ pub struct RunningState {
   saved_display: Option<Entity>,
   name_display: Option<Entity>,
   description_display: Option<Entity>,
-  level: Option<Level>,
-  level_start: Option<Instant>,
-  level_text_update_needed: bool,
-  level_load_frame: u64,
 }
 
 impl<'a, 'b> SimpleState<'a, 'b> for RunningState {
@@ -65,29 +59,12 @@ impl<'a, 'b> SimpleState<'a, 'b> for RunningState {
 
     self.initialise_prefab(world);
     self.initialise_ui(world);
-    self.initialise_level(world);
   }
-  fn handle_event(&mut self, data: StateData<GameData>, event: StateEvent) -> SimpleTrans<'a, 'b> {
+  fn handle_event(&mut self, _data: StateData<GameData>, event: StateEvent) -> SimpleTrans<'a, 'b> {
     match &event {
       StateEvent::Window(event) => {
         if is_key_down(&event, VirtualKeyCode::Escape) {
           return Trans::Quit;
-        }
-        if is_key_down(&event, VirtualKeyCode::R) {
-          info!("Reloading game config");
-          match load_game_config() {
-            Ok(new_config) => {
-              {
-                let mut config = data.world.write_resource::<LevelsConfig>();
-                *config = new_config.levels;
-              }
-              self.initialise_level(data.world);
-            },
-            Err(e) => error!("Error loading GameConfig: {}", e),
-          }
-        }
-        if is_key_down(&event, VirtualKeyCode::N) {
-          self.next_level(data.world);
         }
       },
       _ => {},
@@ -96,8 +73,6 @@ impl<'a, 'b> SimpleState<'a, 'b> for RunningState {
   }
   fn update(&mut self, data: &mut StateData<GameData>) -> SimpleTrans<'a, 'b> {
     let world = &mut data.world;
-
-    self.check_and_load_level(world);
 
     //Fetch the entities for the ui fields
     if self.fps_display.is_none() {
@@ -156,6 +131,7 @@ impl<'a, 'b> SimpleState<'a, 'b> for RunningState {
       });
     }
 
+    /*
     if self.level_text_update_needed {
       let mut ui_text = world.write_storage::<UiText>();
       if let (Some(level), Some(name_display), Some(description_display)) =
@@ -170,34 +146,60 @@ impl<'a, 'b> SimpleState<'a, 'b> for RunningState {
         }
       }
     }
+    */
 
 
     //Update the ui values
     if world.read_resource::<Time>().frame_number() % UI_UPDATE_FRAMES == 0 {
-
-      if let (Some(level_start), Some(name_display), Some(description_display)) =
-        (self.level_start, self.name_display, self.description_display)
+      if let (Some(name_display), Some(description_display)) =
+        (self.name_display, self.description_display)
       {
+        let level = world.read_resource::<Level>();
         let mut hidden = world.write_storage::<Hidden>();
-        if level_start.elapsed().as_secs() < 5 {
+        let mut ui_text = world.write_storage::<UiText>();
+
+        if level.runtime < 5.0 {
           if hidden.contains(name_display) {
             hidden.remove(name_display);
           }
           if hidden.contains(description_display) {
             hidden.remove(description_display);
           }
+
+          if let Some(name_display) = ui_text.get_mut(name_display) {
+            if name_display.text.is_empty() {
+              if let Some(ref name) = level.levels[level.current_level].name {
+                name_display.text.push_str(name);
+              }
+            }
+          }
+
+          if let Some(description_display) = ui_text.get_mut(description_display) {
+            if description_display.text.is_empty() {
+              if let Some(ref description) = level.levels[level.current_level].description {
+                description_display.text.push_str(description);
+              }
+            }
+          }
         } else {
           if !hidden.contains(name_display) {
             hidden
               .insert(name_display, Hidden)
               .expect("Failed to insert component");
+
+            if let Some(name_display) = ui_text.get_mut(name_display) {
+              name_display.text.clear();
+            }
           }
           if !hidden.contains(description_display) {
             hidden
               .insert(description_display, Hidden)
               .expect("Failed to insert component");
+
+            if let Some(description_display) = ui_text.get_mut(description_display) {
+              description_display.text.clear();
+            }
           }
-          self.level_start = None;
         }
       }
 
@@ -257,10 +259,6 @@ impl RunningState {
       saved_display: None,
       name_display: None,
       description_display: None,
-      level: None,
-      level_start: None,
-      level_text_update_needed: false,
-      level_load_frame: 0,
     }
   }
 
@@ -276,54 +274,5 @@ impl RunningState {
       .create_entity()
       .with(self.running_ui_handle.clone())
       .build();
-  }
-
-  fn update_load_level_frame(&mut self, world: &mut World) {
-    self.level_load_frame = world.read_resource::<Time>().frame_number() + 2;
-  }
-
-  fn initialise_level(&mut self, world: &mut World) {
-    let mut start_level = None;
-    if let Some(mut level) = self.level.take() {
-      level.unload(world);
-      start_level = Some(level.current_level());
-    }
-
-    let mut level = Level::new(&world.read_resource::<LevelsConfig>());
-    if let Some(start_level) = start_level {
-      level.jump_to(start_level);
-    }
-    self.level = Some(level);
-    self.update_load_level_frame(world);
-  }
-
-  fn next_level(&mut self, world: &mut World) {
-    if let Some(level) = &mut self.level {
-      if level.is_more_levels() {
-        info!("Loading next level");
-        level.next();
-        level.unload(world);
-      } else {
-        info!("No more levels");
-      }
-    }
-    self.update_load_level_frame(world);
-  }
-
-  fn check_and_load_level(&mut self, world: &mut World) {
-    let current_frame = world.read_resource::<Time>().frame_number();
-
-    if self.level_load_frame >= current_frame {
-      debug!("Skipping load {} >= {}", self.level_load_frame, current_frame);
-      return;
-    }
-
-    if let Some(ref mut level) = self.level {
-      if !level.is_loaded() {
-        level.load(world);
-        self.level_start = Some(Instant::now());
-        self.level_text_update_needed = true;
-      }
-    }
   }
 }

@@ -25,6 +25,7 @@ use super::MatriarchPromote;
 use super::LaunchArea;
 use super::ConstantVelocity;
 use super::DropRam;
+use super::Level;
 
 pub struct GameBundle;
 
@@ -58,6 +59,7 @@ impl<'a, 'b> SystemBundle<'a, 'b> for GameBundle {
         "drop_direction_changer_system",
         "drop_ram_system",
       ]);
+      builder.add(Level::default(), "level_system", &["player_input_system"]);
 
       //These depend on the player input to reduce the chance of the player trying to do something and the matriarch
       //dying a fraction before they do.

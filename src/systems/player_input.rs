@@ -9,6 +9,7 @@ use ::resources::{
   Command,
   CommandChannel,
   Sounds,
+  also_kills,
 };
 
 #[derive(Default)]
@@ -34,15 +35,27 @@ impl<'s> System<'s> for PlayerInput {
       if released {
         self.down_actions.remove(&action);
       } else if pressed {
-        match action.as_ref() {
-          "drop_cube" => commands.single_write(Command::DropCube),
-          "drop_lift" => commands.single_write(Command::DropLift),
-          "drop_direction_changer" => commands.single_write(Command::DropDirectionChanger),
-          "ram" => commands.single_write(Command::DropRam),
-          o => debug!("Unhandled input action: {:?}", o),
+        let cmd = match action.as_ref() {
+          "drop_cube" => Some(Command::DropCube),
+          "drop_lift" => Some(Command::DropLift),
+          "drop_direction_changer" => Some(Command::DropDirectionChanger),
+          "reload_levels" => Some(Command::ReloadLevels),
+          "next_level" => Some(Command::NextLevel),
+          "prev_level" => Some(Command::PreviousLevel),
+          "restart_level" => Some(Command::RestartLevel),
+          "ram" => Some(Command::DropRam),
+          o => {
+            debug!("Unhandled input action: {:?}", o);
+            None
+          },
+        };
+        if let Some(cmd) = cmd {
+          let kill = also_kills(&cmd);
+          commands.single_write(cmd);
+          if kill {
+            commands.single_write(Command::KillMatriarch);
+          }
         }
-        //All other actions also kill the matriach (for now)
-        commands.single_write(Command::KillMatriarch);
         self.down_actions.insert(action);
       }
     }

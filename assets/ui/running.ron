@@ -17,7 +17,7 @@ Container (
                 transparent: true,
             ),
             text: (
-                text: "Name",
+                text: "",
                 font_size: 40.,
                 color: (1., 1., 1., 1.),
                 font: File("font/square.ttf", Ttf, ()),
@@ -35,7 +35,7 @@ Container (
                 transparent: true,
             ),
             text: (
-                text: "Description",
+                text: "",
                 font_size: 25.,
                 color: (1., 1., 1., 1.),
                 font: File("font/square.ttf", Ttf, ()),

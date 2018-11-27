@@ -316,7 +316,7 @@
       ),
       ( //8
         name: "Straight up",
-        description: "Remember the direction changer? (Press 3)",
+        description: "Remember the direction changer? (Press 2)",
         walls: ( color: (r: 0.5, g: 0.5, b: 0.5, a: 1.0 ), list: [
           (size: (x: 500.0, y: 10.0, z: 0.1), position: (x: 250.0, y: 5.0, z: 0.0)), //Bottom
           (size: (x: 500.0, y: 10.0, z: 0.1), position: (x: 250.0, y: 995.0, z: 0.0)), //Top

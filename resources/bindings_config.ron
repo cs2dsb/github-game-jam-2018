@@ -7,5 +7,9 @@
     "drop_lift": [[Key(Key1)],[Key(Numpad1)]],
     "drop_direction_changer": [[Key(Key2)],[Key(Numpad2)]],
     "ram": [[Key(Key3)],[Key(Numpad3)]],
+    "reload_levels": [[Key(R)]],
+    "next_level": [[Key(N)]],
+    "prev_level": [[Key(P)]],
+    "restart_level": [],
   },
 )
