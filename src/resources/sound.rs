@@ -23,9 +23,9 @@ const LIFT_FILE: &'static str = "lift.ogg";
 const DEATH_FILE: &'static str = "death.mp3";
 const EXODUS_FILE: &'static str = "woo.ogg";
 
-const SPAWN_VOLUME: f32 = 1.0;
-const EXIT_VOLUME: f32 = 1.0;
-const LIFT_VOLUME: f32 = 0.8;
+const SPAWN_VOLUME: f32 = 0.8;
+const EXIT_VOLUME: f32 = 0.6;
+const LIFT_VOLUME: f32 = 0.6;
 const DEATH_VOLUME: f32 = 1.0;
 const EXODUS_VOLUME: f32 = 0.2;
 
