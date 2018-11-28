@@ -39,13 +39,13 @@
     volume: 0.5,
   ),
   sprites: (
-    sheet_width: 1280,
-    sheet_height: 1280,
+    sheet_width: 320,
+    sheet_height: 320,
     sprites: [
       (
         name: "lift",
-        sheet_width: 128,
-        sheet_height: 128,
+        sheet_width: 32,
+        sheet_height: 32,
         sheet_x: 0,
         sheet_y: 0,
         scaled_width: 16,
@@ -55,9 +55,9 @@
       ),
       (
         name: "change_direction",
-        sheet_width: 128,
-        sheet_height: 128,
-        sheet_x: 128,
+        sheet_width: 32,
+        sheet_height: 32,
+        sheet_x: 32,
         sheet_y: 0,
         scaled_width: 16,
         scaled_height: 16,
