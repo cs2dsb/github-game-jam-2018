@@ -13,6 +13,7 @@ pub struct Spawner {
   pub frequency: f32,
   pub spawn_count: u32,
   pub elapsed: f32,
+  pub exodus: bool,
   _private: (),
 }
 
@@ -24,6 +25,7 @@ impl Spawner {
       frequency: params.frequency,
       spawn_count: 0,
       elapsed: 0.0,
+      exodus: false,
       _private: (),
     }
   }

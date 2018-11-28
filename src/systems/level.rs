@@ -129,6 +129,8 @@ fn load_config(world: &mut World) {
   level_resource.levels = level_config.levels.clone();
   //Make sure current level isn't higher than max level
   level_resource.current_level = level_resource.current_level.min(level_resource.levels.len() - 1);
+  //Jump to  the start level if it's higher
+  level_resource.current_level = level_resource.current_level.max(start_level);
 
   //This will trigger load on the next frame
   level_resource.load_state = LoadState::NeedLoad;

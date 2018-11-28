@@ -15,6 +15,7 @@ use amethyst::{
 use ncollide2d::world::CollisionGroups;
 
 use ::{
+  config::SpawnerConfig,
   components::{
     Spawner as SpawnerComponent,
     Family,
@@ -61,16 +62,22 @@ impl<'s> System<'s> for Spawner {
     Read<'s, AssetStorage<Source>>,
     Option<Read<'s, Output>>,
     Read<'s, LazyUpdate>,
+    Read<'s, SpawnerConfig>,
   );
 
-  fn run(&mut self, (entities, transforms, time, mut spawners, mut spawn_stats, mut physics_world, sounds, source_storage, output, updater): Self::SystemData) {
+  fn run(&mut self, (entities, transforms, time, mut spawners, mut spawn_stats, mut physics_world, sounds, source_storage, output, updater, spawner_config): Self::SystemData) {
     let delta = time.delta_seconds();
 
     //Increase elapsed time for all Spawners
     for (e, s, t) in (&entities, &mut spawners, &transforms).join() {
       s.elapsed += delta;
+
+      if s.exodus {
+        s.frequency += (spawner_config.frequency_min - s.frequency) * delta;
+      }
+
       if s.elapsed >= s.frequency {
-        s.elapsed -= s.frequency;
+        s.elapsed = 0.0;
         s.spawn_count += 1;
 
         spawn_stats.spawned += 1;

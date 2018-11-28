@@ -1,16 +1,21 @@
 use amethyst::{
   ecs::prelude::*,
   shrev::ReaderId,
+  assets::AssetStorage,
+  audio::{
+    Source,
+    output::Output,
+  },
 };
 
 use ::{
   components::{
     Spawner
   },
-  config::SpawnerConfig,
   resources::{
     Command,
     CommandChannel,
+    Sounds,
   },
 };
 
@@ -23,8 +28,10 @@ pub struct Exodus {
 impl<'s> System<'s> for Exodus {
   type SystemData = (
     Read<'s, CommandChannel>,
-    Read<'s, SpawnerConfig>,
     WriteStorage<'s, Spawner>,
+    ReadExpect<'s, Sounds>,
+    Read<'s, AssetStorage<Source>>,
+    Option<Read<'s, Output>>,
   );
 
   fn setup(&mut self, res: &mut Resources) {
@@ -32,7 +39,7 @@ impl<'s> System<'s> for Exodus {
     self.command_reader = Some(res.fetch_mut::<CommandChannel>().register_reader());
   }
 
-  fn run(&mut self, (commands, spawner_config, mut spawners): Self::SystemData) {
+  fn run(&mut self, (commands, mut spawners, sounds, source_storage, output): Self::SystemData) {
     let mut exodus = false;
     for command in commands.read(self.command_reader.as_mut().unwrap()) {
       match command {
@@ -42,10 +49,11 @@ impl<'s> System<'s> for Exodus {
     }
 
     if exodus {
-      let min_freq = spawner_config.frequency_min;
+      if let Some(output) = &output {
+        sounds.play_exodus(&source_storage, output);
+      }
       for s in (&mut spawners).join() {
-        s.frequency = min_freq;
-        s.elapsed = s.frequency * (s.spawn_count - 1) as f32;
+        s.exodus = true;
       }
     }
   }

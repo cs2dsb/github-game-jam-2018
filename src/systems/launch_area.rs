@@ -99,7 +99,6 @@ impl<'s> System<'s> for LaunchArea {
     //No point playing the same sound multiple times in the same frame
     if to_launch.len() > 0 {
       if let Some(output) = &output {
-        //TODO: current this sound gets played a bunch of times because the overlap happens for more than one frame.
         sounds.play_lift(&source_storage, output);
       }
 
