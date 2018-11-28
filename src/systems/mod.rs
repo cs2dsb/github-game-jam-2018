@@ -34,6 +34,7 @@ mod launch_area;
 mod constant_velocity;
 mod drop_ram;
 mod level;
+mod exodus;
 
 pub use self::basic_velocity::*;
 pub use self::bundle::*;
@@ -59,6 +60,7 @@ pub use self::launch_area::*;
 pub use self::constant_velocity::*;
 pub use self::drop_ram::*;
 pub use self::level::*;
+pub use self::exodus::*;
 
 //Not exactly sure how to structure this
 //Want the function in systems so things like TransformBundle dependencies on my systems

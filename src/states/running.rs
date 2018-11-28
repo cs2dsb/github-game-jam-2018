@@ -24,15 +24,9 @@ use amethyst::{
 };
 
 use ::{
-  config::{
-    SpawnerConfig,
-  },
   resources::{
     SpawnStats,
     Level,
-  },
-  components::{
-    Spawner,
   },
 };
 
@@ -184,34 +178,6 @@ impl RunningState {
         saved_percent_display.text = format!("% SAVED: {:.*}", 0, spawn_stats.saved_ratio() * 100.0);
       }
     }
-    /*
-    if self.spawned_display.is_some() || self.rate_display.is_some() {
-      let mut rate = None;
-      for s in world.read_storage::<Spawner>().join() {
-        if let Some(rate) = rate {
-          assert_eq!(rate, s.frequency);
-        } else {
-          rate = Some(s.frequency);
-        }
-      }
-
-      let spawn_stats = world.read_resource::<SpawnStats>();
-      if let Some(killed_display) = self.killed_display.and_then(|entity| ui_text.get_mut(entity)) {
-        killed_display.text = format!("KILLED: {}", spawn_stats.killed);
-      }
-      if let Some(saved_display) = self.saved_display.and_then(|entity| ui_text.get_mut(entity)) {
-        saved_display.text = format!("SAVED: {}", spawn_stats.saved);
-      }
-      if let (Some(rate), Some(rate_display)) = (rate, self.rate_display.and_then(|entity| ui_text.get_mut(entity))) {
-        let spawner_config = world.read_resource::<SpawnerConfig>();
-        let rate = (rate - spawner_config.frequency_min) / (spawner_config.frequency_max - spawner_config.frequency_min);
-        let rate = 1.0 - rate;
-        let rate = 100.0 * rate;
-        let rate = rate.round() as u32;
-        rate_display.text = format!("RATE: {}", rate);
-      }
-    }
-    */
   }
 
   fn update_ui(&mut self, world: &mut World) {

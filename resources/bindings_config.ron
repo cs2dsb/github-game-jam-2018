@@ -11,5 +11,6 @@
     "next_level": [[Key(N)]],
     "prev_level": [[Key(P)]],
     "restart_level": [],
+    "exodus": [[Key(Space)]],
   },
 )

@@ -15,6 +15,7 @@ A mashup of Lemmings and an endless runner sorta thing. The camera tracks the le
   - ``p`` -> previous level
   - ``+`` -> volume up
   - ``-`` -> volume down
+  - ``space`` -> mass exodus
 
 ## Implementation
   - Language: [Rust](https://www.rust-lang.org/)

@@ -45,6 +45,7 @@ impl<'s> System<'s> for PlayerInput {
           "prev_level" => Some(Command::PreviousLevel),
           "restart_level" => Some(Command::RestartLevel),
           "ram" => Some(Command::DropRam),
+          "exodus" => Some(Command::Exodus),
           o => {
             debug!("Unhandled input action: {:?}", o);
             None

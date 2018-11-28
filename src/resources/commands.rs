@@ -14,6 +14,7 @@ pub enum Command {
   NextLevel,
   RestartLevel,
   PreviousLevel,
+  Exodus,
 }
 
 ///Does the specified command also kill the matriarch?
@@ -30,6 +31,7 @@ pub fn also_kills(cmd: &Command) -> bool {
     &Command::NextLevel => false,
     &Command::RestartLevel => false,
     &Command::PreviousLevel => false,
+    &Command::Exodus => false,
   }
 }
 
