@@ -1,7 +1,4 @@
-use amethyst::{
-  core::cgmath::Vector2,
-  ecs::prelude::*,
-};
+use amethyst::core::cgmath::Vector2;
 
 pub struct SpawnerParams {
   pub spawn_size: Vector2<f32>,
@@ -16,7 +13,6 @@ pub struct Spawner {
   pub frequency: f32,
   pub spawn_count: u32,
   pub elapsed: f32,
-  pub last_spawn: Option<Entity>,
   _private: (),
 }
 
@@ -28,7 +24,6 @@ impl Spawner {
       frequency: params.frequency,
       spawn_count: 0,
       elapsed: 0.0,
-      last_spawn: None,
       _private: (),
     }
   }

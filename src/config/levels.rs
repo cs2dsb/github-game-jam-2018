@@ -21,6 +21,8 @@ pub struct CameraOverrides {
   pub offset: Option<Vector3<f32>>,
   pub convergence_speed: Option<f32>,
   pub position: Option<Vector3<f32>>,
+  //Option<Option> So you can override Some with None
+  pub final_position: Option<Option<Vector3<f32>>>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]

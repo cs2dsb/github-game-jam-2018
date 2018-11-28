@@ -475,6 +475,7 @@ fn update_camera(world: &mut World, overrides: &CameraOverrides) -> CameraOverri
     offset: Some(camera_config.offset),
     //We don't want to restore the position
     position: None,
+    final_position: Some(camera_config.final_position),
   };
 
   if let Some(convergence_speed) = &overrides.convergence_speed {
@@ -483,6 +484,10 @@ fn update_camera(world: &mut World, overrides: &CameraOverrides) -> CameraOverri
 
   if let Some(offset) = &overrides.offset {
     camera_config.offset = *offset;
+  }
+
+  if let Some(final_position) = &overrides.final_position {
+    camera_config.final_position = *final_position;
   }
 
   //TODO: This doesn't work on the first level because the FlyControlTag hasn't been initialized
@@ -494,6 +499,14 @@ fn update_camera(world: &mut World, overrides: &CameraOverrides) -> CameraOverri
       &world.read_storage::<FlyControlTag>()).join() {
 
       t.translation = *position;
+    }
+  } else {
+    //If position isn't specified, just reset the zoom
+    for (t, _) in (
+      &mut world.write_storage::<Transform>(),
+      &world.read_storage::<FlyControlTag>()).join() {
+
+      t.translation.z = camera_config.z_default;
     }
   }
 

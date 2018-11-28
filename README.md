@@ -16,6 +16,8 @@ A mashup of Lemmings and an endless runner sorta thing. The camera tracks the le
   - ``+`` -> volume up
   - ``-`` -> volume down
   - ``space`` -> mass exodus
+  - ``w`` -> zoom in
+  - ``s`` -> zoom out
 
 ## Implementation
   - Language: [Rust](https://www.rust-lang.org/)

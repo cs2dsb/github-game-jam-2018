@@ -45,6 +45,7 @@ impl<'s> System<'s> for Exodus {
       let min_freq = spawner_config.frequency_min;
       for s in (&mut spawners).join() {
         s.frequency = min_freq;
+        s.elapsed = s.frequency * (s.spawn_count - 1) as f32;
       }
     }
   }
