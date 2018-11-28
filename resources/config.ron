@@ -33,6 +33,7 @@
     frequency_max: 4.0,
     frequency_default: 0.8,
     max_default: 20,
+    win_ratio_default: 0.5,
   ),
   sound: (
     volume: 0.5,
@@ -215,7 +216,7 @@
       ( //5
         name: "Ramming speed",
         description: "Press 3 to ram",
-        spawn_overrides: (freq: 2.0, max: 20),
+        spawn_overrides: (freq: 2.0, max: 20, win_ratio: 0.5),
         camera_overrides: (convergence_speed: 0.0, position: (x: 250.0, y: 125.0, z: 300.0)),
         walls: ( color: (r: 0.5, g: 0.5, b: 0.5, a: 1.0 ), list: [
           (size: (x: 500.0, y: 10.0, z: 0.1), position: (x: 250.0, y: 5.0, z: 0.0)), //Bottom
@@ -236,7 +237,7 @@
       ( //6
         name: "What a mess you made",
         description: "",
-        spawn_overrides: (freq: 2.0, max: 20),
+        spawn_overrides: (freq: 2.0, max: 20, win_ratio: 0.5),
         camera_overrides: (convergence_speed: 0.0, position: (x: 250.0, y: 125.0, z: 300.0)),
         walls: ( color: (r: 0.5, g: 0.5, b: 0.5, a: 1.0 ), list: [
           (size: (x: 500.0, y: 10.0, z: 0.1), position: (x: 250.0, y: 5.0, z: 0.0)), //Bottom

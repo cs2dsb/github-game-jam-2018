@@ -53,6 +53,7 @@ impl<'s> System<'s> for Level {
     Read<'s, Time>,
     Read<'s, LazyUpdate>,
     Write<'s, LevelResource>,
+    Read<'s, SpawnStats>,
   );
 
   fn setup(&mut self, res: &mut Resources) {
@@ -60,7 +61,7 @@ impl<'s> System<'s> for Level {
     self.command_reader = Some(res.fetch_mut::<CommandChannel>().register_reader());
   }
 
-  fn run(&mut self, (commands, time, updater, mut level_resource): Self::SystemData) {
+  fn run(&mut self, (commands, time, updater, mut level_resource, spawn_stats): Self::SystemData) {
     level_resource.runtime += time.delta_seconds();
 
     let mut pending_action = true;
@@ -93,7 +94,9 @@ impl<'s> System<'s> for Level {
       if reload {
         updater.exec_mut(move |world| reload_config(world));
       } else if next {
-        updater.exec_mut(move |world| next_level(world));
+        if spawn_stats.saved_ratio() >= spawn_stats.win_ratio {
+          updater.exec_mut(move |world| next_level(world));
+        }
       } else if prev {
         updater.exec_mut(move |world| prev_level(world));
       } else if restart {
@@ -418,14 +421,19 @@ fn create_level_objects(world: &mut World, level: &LevelConfig) {
   }
 
   if let Some(ref set) = level.spawners {
-    let (freq, max) = {
+    let (freq, max, win_ratio) = {
       if let Some(ref overrides) = level.spawn_overrides {
-        (overrides.freq, overrides.max)
+        (overrides.freq, overrides.max, overrides.win_ratio)
       } else {
         let config = world.read_resource::<SpawnerConfig>();
-        (config.frequency_default, config.max_default)
+        (config.frequency_default, config.max_default, config.win_ratio_default)
       }
     };
+
+    {
+      let mut spawn_stats = world.write_resource::<SpawnStats>();
+      spawn_stats.win_ratio = win_ratio;
+    }
 
     for o in &set.list {
       create_spawner(

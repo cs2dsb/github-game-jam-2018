@@ -27,6 +27,7 @@ pub struct CameraOverrides {
 pub struct SpawnOverides {
   pub freq: f32,
   pub max: u32,
+  pub win_ratio: f32,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]

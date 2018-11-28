@@ -6,6 +6,8 @@ pub struct SpawnerConfig {
   pub frequency_default: f32,
   //What the max spawns is set to unless specified by the level
   pub max_default: u32,
+  //What the target save ratio is (0-1)
+  pub win_ratio_default: f32,
 }
 
 impl Default for SpawnerConfig {
@@ -15,6 +17,7 @@ impl Default for SpawnerConfig {
       frequency_max: 10.0,
       frequency_default: 2.0,
       max_default: 50,
+      win_ratio_default: 0.5,
     }
   }
 }

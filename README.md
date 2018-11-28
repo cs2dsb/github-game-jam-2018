@@ -11,7 +11,7 @@ A mashup of Lemmings and an endless runner sorta thing. The camera tracks the le
   - ``2`` -> change direction
   - ``3`` -> dash
   - ``r`` -> restart level
-  - ``n`` -> next level
+  - ``n`` -> next level (if % NEEDED is met)
   - ``p`` -> previous level
   - ``+`` -> volume up
   - ``-`` -> volume down

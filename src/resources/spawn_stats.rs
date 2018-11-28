@@ -5,4 +5,15 @@ pub struct SpawnStats {
   pub spawned: u32,
   pub killed: u32,
   pub saved: u32,
+  pub win_ratio: f32,
+}
+
+impl SpawnStats {
+  pub fn saved_ratio(&self) -> f32 {
+    if self.total == 0 {
+      0.0
+    } else {
+      self.saved as f32 / self.total as f32
+    }
+  }
 }
