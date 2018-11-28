@@ -23,7 +23,6 @@ const LIFT_FILE: &'static str = "lift.ogg";
 const DEATH_FILE: &'static str = "death.mp3";
 
 ///Resource containing the sound effects the game uses.
-//TODO: need some kind of limiter, especially on the lift which currently gets fired every frame while there's an overlap
 pub struct Sounds {
   pub volume: f32,
   spawn: SourceHandle,

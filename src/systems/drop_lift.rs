@@ -60,16 +60,12 @@ impl<'s> System<'s> for DropLift {
         if entities.is_alive(e) {
           debug!("Dropping lift on Matriarch {:?}", e);
 
-          let la = LaunchArea {
-            direction: w.direction,
-          };
+          let la = LaunchArea::new(w.direction);
 
           let sprite = sprites.lift.clone();
 
-          let mut transform = t.clone();
-
           let sensor = physics_world.create_ground_box_sensor(
-            &Vector2::new(transform.translation.x, transform.translation.y), //Pos
+            &Vector2::new(t.translation.x, t.translation.y), //Pos
             &Vector2::new(physics_config.lift_width * 0.5, physics_config.lift_height * 0.5), //Size
             0.0);
 
@@ -77,7 +73,6 @@ impl<'s> System<'s> for DropLift {
             .create_entity(&entities)
             .with(la)
             .with(sprite)
-            .with(transform)
             .with(sensor)
             .build();
         }

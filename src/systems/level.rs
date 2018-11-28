@@ -142,6 +142,12 @@ fn load_level(world: &mut World) {
 
   info!("Loading level");
 
+  //Reset spawn stats
+  {
+    let mut stats = world.write_resource::<SpawnStats>();
+    *stats = SpawnStats::default();
+  }
+
   let prev_cam = {
     //TODO: must be a better way than the clone
     //Clone because level_resource is borrowed from world and we also need to mutate world
@@ -159,6 +165,7 @@ fn load_level(world: &mut World) {
       None
     }
   };
+
 
   let mut level_resource = world.write_resource::<LevelResource>();
   level_resource.prev_camera_settings = prev_cam;
@@ -194,10 +201,6 @@ fn unload_level(world: &mut World) {
         .delete(e)
         .expect("Failed to delete entitiy");
     }
-
-    //Reset spawn stats
-    let mut stats = world.write_resource::<SpawnStats>();
-    *stats = SpawnStats::default();
   }
 
   let mut level_resource = world.write_resource::<LevelResource>();

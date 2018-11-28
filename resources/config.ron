@@ -29,7 +29,7 @@
     gridline_width: 0.0,
   ),
   spawner: (
-    frequency_min: 0.1,
+    frequency_min: 0.15,
     frequency_max: 4.0,
     frequency_default: 0.8,
     max_default: 20,
@@ -320,6 +320,7 @@
       ( //8
         name: "Straight up",
         description: "Remember the direction changer? (Press 2)",
+        spawn_overrides: (freq: 0.5, max: 30, win_ratio: 0.5),
         walls: ( color: (r: 0.5, g: 0.5, b: 0.5, a: 1.0 ), list: [
           (size: (x: 500.0, y: 10.0, z: 0.1), position: (x: 250.0, y: 5.0, z: 0.0)), //Bottom
           (size: (x: 500.0, y: 10.0, z: 0.1), position: (x: 250.0, y: 995.0, z: 0.0)), //Top

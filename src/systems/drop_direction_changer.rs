@@ -67,17 +67,11 @@ impl<'s> System<'s> for DropDirectionChanger {
           debug!("Dropping direction changer on Matriarch {:?}", e);
 
           let direction = w.direction.reversed();
-          //let z_rot = match direction {
-          //  Direction::Right => 0.0,
-          //  Direction::Left => 180.0,
-          //};
 
           let sprite = sprites.change_direction.clone();
 
-          let mut transform = t.clone();
-
           let sensor = physics_world.create_ground_box_sensor(
-            &Vector2::new(transform.translation.x, transform.translation.y), //Pos
+            &Vector2::new(t.translation.x, t.translation.y), //Pos
             &Vector2::new(physics_config.change_direction_width * 0.5, physics_config.change_direction_height * 0.5), //Size
             0.0);
 
@@ -88,7 +82,6 @@ impl<'s> System<'s> for DropDirectionChanger {
           updater
             .create_entity(&entities)
             .with(sprite)
-            .with(transform)
             .with(sensor)
             .with(change_direction)
             .build();

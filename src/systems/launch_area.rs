@@ -54,7 +54,7 @@ pub struct LaunchArea;
 impl<'s> System<'s> for LaunchArea {
   type SystemData = (
     ReadStorage<'s, Walker>,
-    ReadStorage<'s, LaunchAreaComponent>,
+    WriteStorage<'s, LaunchAreaComponent>,
     ReadStorage<'s, Collider>,
     Write<'s, PhysicsWorld>,
     Read<'s, PhysicsConfig>,
@@ -63,17 +63,22 @@ impl<'s> System<'s> for LaunchArea {
     Option<Read<'s, Output>>,
   );
 
-  fn run(&mut self, (walkers, launch_area_components, colliders, mut physics_world, physics_config, sounds, source_storage, output): Self::SystemData) {
+  fn run(&mut self, (walkers, mut launch_area_components, colliders, mut physics_world, physics_config, sounds, source_storage, output): Self::SystemData) {
     let mut to_launch = Vec::new();
 
     //Go through fetching all sensors and checking if walkers are in proximity
-    for (launch_area, sensor) in (&launch_area_components, &colliders).join() {
+    for (launch_area, sensor) in (&mut launch_area_components, &colliders).join() {
       //Go through all other colliders in it's proximity
       if let Some(proxs) = physics_world.get_proximity(&sensor.collider_handle) {
         for prox in proxs {
           if let Some(entity) = physics_world.get_entity_for_collider(prox) {
+            if launch_area.already_launched.contains(&entity) {
+              //Skip anything we've already launched with this lift
+              continue;
+            }
             //Only works on walkers
             if let Some(_) = walkers.get(entity) {
+              launch_area.already_launched.insert(entity);
               //We want to change the velocity of these but physics_world is already borrowed
               //not sure if there's a better way to do this...
               if let Some(body_handle) = physics_world.get_body_for_collider(prox) {
