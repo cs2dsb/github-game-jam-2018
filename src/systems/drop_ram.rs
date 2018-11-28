@@ -47,6 +47,7 @@ impl<'s> System<'s> for DropRam {
     ReadStorage<'s, Transform>,
     Read<'s, PhysicsConfig>,
     Read<'s, LazyUpdate>,
+    ReadStorage<'s, Age>,
   );
 
   fn setup(&mut self, res: &mut Resources) {
@@ -54,7 +55,7 @@ impl<'s> System<'s> for DropRam {
     self.command_reader = Some(res.fetch_mut::<CommandChannel>().register_reader());
   }
 
-  fn run(&mut self, (entities, commands, matriarchs, colors, shapes, walkers, mut physics_world, transforms, physics_config, updater): Self::SystemData) {
+  fn run(&mut self, (entities, commands, matriarchs, colors, shapes, walkers, mut physics_world, transforms, physics_config, updater, ages): Self::SystemData) {
     let mut drop_ram = false;
     for command in commands.read(self.command_reader.as_mut().unwrap()) {
       match command {
@@ -64,8 +65,12 @@ impl<'s> System<'s> for DropRam {
     }
 
     if drop_ram {
-      for (e, _, t, w) in (&entities, &matriarchs, &transforms, &walkers).join() {
+      for (e, m, t, w, a) in (&entities, &matriarchs, &transforms, &walkers, &ages).join() {
         if entities.is_alive(e) {
+          //This test is to discard commands that were likely intended for a matriarch that just died
+          if (a.seconds - m.age_when_promoted) < physics_config.matriarch_grace_period {
+            continue;
+          }
           debug!("Dropping ram on Matriarch {:?}", e);
 
           let collider = physics_world.create_rigid_body_with_box_collider_with_density(

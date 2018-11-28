@@ -41,7 +41,9 @@ impl<'s> System<'s> for MatriarchPromote {
 
     if let Some(eldest) = eldest {
       matriarchs
-        .insert(eldest, Matriarch::default())
+        .insert(eldest, Matriarch {
+          age_when_promoted: b_age,
+        })
         .expect("Failed inserting component");
     }
   }

@@ -15,6 +15,7 @@ use ::{
     Walker,
     Collider,
     ChangeDirection as ChangeDirectionComponent,
+    Age,
   },
   config::PhysicsConfig,
   resources::{
@@ -45,6 +46,7 @@ impl<'s> System<'s> for DropDirectionChanger {
     Read<'s, PhysicsConfig>,
     ReadExpect<'s, Sprites>,
     Read<'s, LazyUpdate>,
+    ReadStorage<'s, Age>,
   );
 
   fn setup(&mut self, res: &mut Resources) {
@@ -52,7 +54,7 @@ impl<'s> System<'s> for DropDirectionChanger {
     self.command_reader = Some(res.fetch_mut::<CommandChannel>().register_reader());
   }
 
-  fn run(&mut self, (entities, commands, matriarchs, transforms, mut walkers, change_direction_components, colliders, mut physics_world, physics_config, sprites, updater): Self::SystemData) {
+  fn run(&mut self, (entities, commands, matriarchs, transforms, mut walkers, change_direction_components, colliders, mut physics_world, physics_config, sprites, updater, ages): Self::SystemData) {
     let mut drop_direction_changer = false;
     for command in commands.read(self.command_reader.as_mut().unwrap()) {
       match command {
@@ -62,8 +64,12 @@ impl<'s> System<'s> for DropDirectionChanger {
     }
 
     if drop_direction_changer {
-      for (e, _, t, w) in (&entities, &matriarchs, &transforms, &walkers).join() {
+      for (e, m, t, w, a) in (&entities, &matriarchs, &transforms, &walkers, &ages).join() {
         if entities.is_alive(e) {
+          //This test is to discard commands that were likely intended for a matriarch that just died
+          if (a.seconds - m.age_when_promoted) < physics_config.matriarch_grace_period {
+            continue;
+          }
           debug!("Dropping direction changer on Matriarch {:?}", e);
 
           let direction = w.direction.reversed();

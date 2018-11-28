@@ -52,7 +52,7 @@ impl Component for Family {
 }
 
 impl Component for Matriarch {
-  type Storage = NullStorage<Self>;
+  type Storage = BTreeStorage<Self>;
 }
 
 impl Component for Walker {

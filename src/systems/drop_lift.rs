@@ -12,6 +12,7 @@ use ::{
     Matriarch,
     Walker,
     LaunchArea,
+    Age,
   },
   config::PhysicsConfig,
   resources::{
@@ -39,6 +40,7 @@ impl<'s> System<'s> for DropLift {
     Read<'s, PhysicsConfig>,
     ReadExpect<'s, Sprites>,
     Read<'s, LazyUpdate>,
+    ReadStorage<'s, Age>,
   );
 
   fn setup(&mut self, res: &mut Resources) {
@@ -46,7 +48,7 @@ impl<'s> System<'s> for DropLift {
     self.command_reader = Some(res.fetch_mut::<CommandChannel>().register_reader());
   }
 
-  fn run(&mut self, (entities, commands, matriarchs, transforms, walkers, mut physics_world, physics_config, sprites, updater): Self::SystemData) {
+  fn run(&mut self, (entities, commands, matriarchs, transforms, walkers, mut physics_world, physics_config, sprites, updater, ages): Self::SystemData) {
     let mut drop_lift = false;
     for command in commands.read(self.command_reader.as_mut().unwrap()) {
       match command {
@@ -56,8 +58,13 @@ impl<'s> System<'s> for DropLift {
     }
 
     if drop_lift {
-      for (e, _, t, w) in (&entities, &matriarchs, &transforms, &walkers).join() {
+      for (e, m, t, w, a) in (&entities, &matriarchs, &transforms, &walkers, &ages).join() {
         if entities.is_alive(e) {
+          //This test is to discard commands that were likely intended for a matriarch that just died
+          if (a.seconds - m.age_when_promoted) < physics_config.matriarch_grace_period {
+            continue;
+          }
+
           debug!("Dropping lift on Matriarch {:?}", e);
 
           let la = LaunchArea::new(w.direction);

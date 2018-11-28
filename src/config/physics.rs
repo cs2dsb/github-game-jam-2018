@@ -17,6 +17,8 @@ pub struct PhysicsConfig {
   pub ram_velocity: Vector2<f32>,
   pub ram_density: f32,
   pub ram_life: f32,
+  //How old does a matriarch have to be before it can accept commands
+  pub matriarch_grace_period: f32,
 }
 
 impl Default for PhysicsConfig {
@@ -36,6 +38,7 @@ impl Default for PhysicsConfig {
       ram_velocity: Vector2::new(10.0, 0.0),
       ram_density: 100.0,
       ram_life: 0.5,
+      matriarch_grace_period: 0.15,
     }
   }
 }

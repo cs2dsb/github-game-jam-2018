@@ -6,12 +6,14 @@ use amethyst::{
 use ::{
   components::{
     Matriarch,
+    Age,
   },
   resources::{
     Command,
     CommandChannel,
     SpawnStats,
   },
+  config::PhysicsConfig,
 };
 
 ///Kills the current matriarch.
@@ -26,6 +28,8 @@ impl<'s> System<'s> for Murder {
     ReadStorage<'s, Matriarch>,
     Write<'s, SpawnStats>,
     Read<'s, CommandChannel>,
+    Read<'s, PhysicsConfig>,
+    ReadStorage<'s, Age>,
   );
 
   fn setup(&mut self, res: &mut Resources) {
@@ -33,7 +37,7 @@ impl<'s> System<'s> for Murder {
     self.command_reader = Some(res.fetch_mut::<CommandChannel>().register_reader());
   }
 
-  fn run(&mut self, (entities,  matriarchs, mut spawn_stats, commands): Self::SystemData) {
+  fn run(&mut self, (entities,  matriarchs, mut spawn_stats, commands, physics_config, ages): Self::SystemData) {
     let mut murder = false;
     for command in commands.read(self.command_reader.as_mut().unwrap()) {
       match command {
@@ -43,8 +47,14 @@ impl<'s> System<'s> for Murder {
     }
 
     if murder {
-      for (e, _) in (&entities, &matriarchs).join() {
+      for (e, m, a) in (&entities, &matriarchs, &ages).join() {
         if entities.is_alive(e) {
+
+          //This test is to discard commands that were likely intended for a matriarch that just died
+          if (a.seconds - m.age_when_promoted) < physics_config.matriarch_grace_period {
+            continue;
+          }
+
           debug!("Murdering Matriarch {:?}", e);
           spawn_stats.killed += 1;
 
