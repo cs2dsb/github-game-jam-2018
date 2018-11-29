@@ -16,7 +16,10 @@ use amethyst::{
   },
 };
 
-use random_color::RandomColor;
+use random_color::{
+  RandomColor,
+  Luminosity,
+};
 use ::components::{
   Shape as ShapeComponent,
   Color,
@@ -48,7 +51,9 @@ impl<'s> System<'s> for ShapeVisualizer {
         if let Some(color) = colors.get(entity) {
           (*color).into()
         } else {
-          let color = RandomColor::new().to_rgb_array();
+          let color = RandomColor::new()
+            .luminosity(Luminosity::Light)
+            .to_rgb_array();
           let color = Color::new(
             color[0] as f32 / 255.0,
             color[1] as f32 / 255.0,
