@@ -692,6 +692,56 @@
           (size: (x: 30.0, y: 30.0, z: 0.1), position: (x: 200.0, y: 600.0, z: 0.0)),
         ]),
       ),
+      ( //16
+        name: "Last level (for now...)",
+        description: "Psst, you can usually halt a spin with two direction changers",
+        camera_overrides: (
+          position: (x: 850.0, y: 900.0, z: 300.0),
+          offset: (x: -75.0, y: 0.0, z: 0.0),
+          final_position: (x: 500.0, y: 500.0, z: 900.0),
+          convergence_speed: 4.0,
+        ),
+        spawn_overrides: (freq: 1.5, max: 500, win_ratio: 0.5),
+        walls: ( color: (r: 0.5, g: 0.5, b: 0.5, a: 1.0 ), list: [
+          (size: (x: 1000.0, y: 10.0, z: 0.1), position: (x: 500.0, y: 995.0, z: 0.0)), //Top
+          (size: (x: 10.0, y: 1000.0, z: 0.1), position: (x: 5.0, y: 500.0, z: 0.0)), //Left
+          (size: (x: 10.0, y: 1000.0, z: 0.1), position: (x: 995.0, y: 500.0, z: 0.0)), //Right
+          (size: (x: 1000.0, y: 10.0, z: 0.1), position: (x: 500.0, y: 5.0, z: 0.0)), //Bottom
+
+          (size: (x: 10.0, y: 900.0, z: 0.1), position: (x: 895.0, y: 550.0, z: 0.0)),
+          (size: (x: 10.0, y: 900.0, z: 0.1), position: (x: 795.0, y: 450.0, z: 0.0)),
+          (size: (x: 10.0, y: 900.0, z: 0.1), position: (x: 695.0, y: 550.0, z: 0.0)),
+          (size: (x: 10.0, y: 900.0, z: 0.1), position: (x: 595.0, y: 450.0, z: 0.0)),
+          (size: (x: 10.0, y: 900.0, z: 0.1), position: (x: 495.0, y: 550.0, z: 0.0)),
+          (size: (x: 10.0, y: 900.0, z: 0.1), position: (x: 395.0, y: 450.0, z: 0.0)),
+          (size: (x: 10.0, y: 900.0, z: 0.1), position: (x: 295.0, y: 550.0, z: 0.0)),
+          (size: (x: 10.0, y: 900.0, z: 0.1), position: (x: 195.0, y: 450.0, z: 0.0)),
+          (size: (x: 10.0, y: 900.0, z: 0.1), position: (x: 95.0, y: 550.0, z: 0.0)),
+        ]),
+        deadly_areas: ( color: (r: 0.8, g: 0.1, b: 0.1, a: 1.0 ), list: [
+          (size: (x: 70.0, y: 10.0, z: 0.1), position: (x: 955.0, y: 15.0, z: 0.0)),
+          (size: (x: 70.0, y: 10.0, z: 0.1), position: (x: 835.0, y: 15.0, z: 0.0)),
+          (size: (x: 70.0, y: 10.0, z: 0.1), position: (x: 755.0, y: 15.0, z: 0.0)),
+          (size: (x: 70.0, y: 10.0, z: 0.1), position: (x: 635.0, y: 15.0, z: 0.0)),
+          (size: (x: 70.0, y: 10.0, z: 0.1), position: (x: 555.0, y: 15.0, z: 0.0)),
+          (size: (x: 70.0, y: 10.0, z: 0.1), position: (x: 435.0, y: 15.0, z: 0.0)),
+          (size: (x: 70.0, y: 10.0, z: 0.1), position: (x: 355.0, y: 15.0, z: 0.0)),
+          (size: (x: 70.0, y: 10.0, z: 0.1), position: (x: 235.0, y: 15.0, z: 0.0)),
+          (size: (x: 70.0, y: 10.0, z: 0.1), position: (x: 155.0, y: 15.0, z: 0.0)),
+          (size: (x: 70.0, y: 10.0, z: 0.1), position: (x: 35.0, y: 15.0, z: 0.0)),
+
+          (size: (x: 190.0, y: 10.0, z: 0.1), position: (x: 795.0, y: 985.0, z: 0.0)),
+          (size: (x: 190.0, y: 10.0, z: 0.1), position: (x: 595.0, y: 985.0, z: 0.0)),
+          (size: (x: 190.0, y: 10.0, z: 0.1), position: (x: 395.0, y: 985.0, z: 0.0)),
+          (size: (x: 190.0, y: 10.0, z: 0.1), position: (x: 195.0, y: 985.0, z: 0.0)),
+        ]),
+        exits: ( color: (r: 0.1, g: 0.8, b: 0.1, a: 1.0 ), list: [
+          (size: (x: 80.0, y: 10.0, z: 0.1), position: (x: 50.0, y: 985.0, z: 0.0)),
+        ]),
+        spawners: ( color: (r: 0.1, g: 0.1, b: 0.8, a: 1.0 ), list: [
+          (size: (x: 30.0, y: 30.0, z: 0.1), position: (x: 970.0, y: 970.0, z: 0.0)),
+        ]),
+      ),
     ],
   ),
 )
