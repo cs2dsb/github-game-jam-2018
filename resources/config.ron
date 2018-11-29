@@ -67,7 +67,7 @@
     )],
   ),
   levels: (
-    start_level: 0,
+    start_level: 14,
     levels: [
       ( //0
         name: "Easy beginnings",
@@ -578,7 +578,6 @@
           (size: (x: 1000.0, y: 10.0, z: 0.1), position: (x: 500.0, y: 995.0, z: 0.0)), //Top
           (size: (x: 10.0, y: 1000.0, z: 0.1), position: (x: 5.0, y: 500.0, z: 0.0)), //Left
           (size: (x: 10.0, y: 1000.0, z: 0.1), position: (x: 995.0, y: 500.0, z: 0.0)), //Right
-
         ]),
         deadly_areas: ( color: (r: 0.8, g: 0.1, b: 0.1, a: 1.0 ), list: [
           //Ceiling
@@ -619,6 +618,41 @@
           (size: (x: 50.0, y: 150.0, z: 0.1), position: (x: 785.0, y: 925.0, z: 0.0)),
           (size: (x: 100.0, y: 100.0, z: 0.1), position: (x: 860.0, y: 950.0, z: 0.0)),
           (size: (x: 50.0, y: 250.0, z: 0.1), position: (x: 935.0, y: 875.0, z: 0.0)),
+        ]),
+        spawners: ( color: (r: 0.1, g: 0.1, b: 0.8, a: 1.0 ), list: [
+          (size: (x: 30.0, y: 30.0, z: 0.1), position: (x: 50.0, y: 50.0, z: 0.0)),
+        ]),
+      ),
+      ( //14
+        name: "Zig-Zag",
+        description: "(Two red + two green) x 4",
+        camera_overrides: (
+          position: (x: 150.0, y: 100.0, z: 300.0),
+          final_position: (x: 650.0, y: 100.0, z: 700.0),
+        ),
+        spawn_overrides: (freq: 1.5, max: 30, win_ratio: 0.33),
+        walls: ( color: (r: 0.5, g: 0.5, b: 0.5, a: 1.0 ), list: [
+          (size: (x: 1300.0, y: 10.0, z: 0.1), position: (x: 650.0, y: 5.0, z: 0.0)), //Bottom
+          (size: (x: 1300.0, y: 10.0, z: 0.1), position: (x: 650.0, y: 245.0, z: 0.0)), //Top
+          (size: (x: 10.0, y: 250.0, z: 0.1), position: (x: 5.0, y: 125.0, z: 0.0)), //Left
+        ]),
+        deadly_areas: ( color: (r: 0.8, g: 0.1, b: 0.1, a: 1.0 ), list: [
+          (size: (x: 1280.0, y: 10.0, z: 0.1), position: (x: 650.0, y: 235.0, z: 0.0)), //Ceiling
+
+          //Floor lumps
+          (size: (x: 30.0, y: 120.0, z: 0.1), position: (x: 150.0, y: 70.0, z: 0.0)),
+          (size: (x: 30.0, y: 120.0, z: 0.1), position: (x: 450.0, y: 70.0, z: 0.0)),
+          (size: (x: 30.0, y: 120.0, z: 0.1), position: (x: 750.0, y: 70.0, z: 0.0)),
+          (size: (x: 30.0, y: 120.0, z: 0.1), position: (x: 1050.0, y: 70.0, z: 0.0)),
+
+          //Ceiling lumps
+          (size: (x: 30.0, y: 120.0, z: 0.1), position: (x: 300.0, y: 170.0, z: 0.0)),
+          (size: (x: 30.0, y: 120.0, z: 0.1), position: (x: 600.0, y: 170.0, z: 0.0)),
+          (size: (x: 30.0, y: 120.0, z: 0.1), position: (x: 900.0, y: 170.0, z: 0.0)),
+          (size: (x: 30.0, y: 120.0, z: 0.1), position: (x: 1200.0, y: 170.0, z: 0.0)),
+        ]),
+        exits: ( color: (r: 0.1, g: 0.8, b: 0.1, a: 1.0 ), list: [
+          (size: (x: 10.0, y: 230.0, z: 0.1), position: (x: 1295.0, y: 125.0, z: 0.0)),
         ]),
         spawners: ( color: (r: 0.1, g: 0.1, b: 0.8, a: 1.0 ), list: [
           (size: (x: 30.0, y: 30.0, z: 0.1), position: (x: 50.0, y: 50.0, z: 0.0)),

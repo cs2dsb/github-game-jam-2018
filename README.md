@@ -28,7 +28,7 @@ A mashup of Lemmings and an ~~endless~~ runner sorta thing. The camera tracks th
 [MIT License](LICENSE-MIT)
 
 ## Notes
-You can muck about with lots of settings in resources/config.ron. Try tweaking the number of creeps that spawn in the "spawner" section (defaults unless the level overrides them) or "spawn_overrides" (per level settings). You can change this file and press R in game to pick up level changes (only changes in the "levels" section can be reloaded in game, restart the game for anything else). If you get the syntax wrong it'll print an error to the console. It'll also fail to launch if the config file is invalid but the errors are pretty helpful mostly.
+You can muck about with lots of settings in resources/config.ron. Try tweaking the number of creeps that spawn in the "spawner" section (defaults unless the level overrides them) or "spawn_overrides" (per level settings). You can change this file and press R in game to pick up level changes (only changes in the "levels" section can be reloaded in game, restart the game for anything else). If you get the syntax wrong it'll print an error to the console. It'll also fail to launch if the config file is invalid but the errors are pretty helpful mostly. You can change "start_level" to the 0-based number of the level you want to play to skip if you want.
 
 ## Known issues
   - Nothing rendering on OSX Mojave until the window is resized [(fixed in next Amethyst release)](https://github.com/amethyst/amethyst/issues/1036)
