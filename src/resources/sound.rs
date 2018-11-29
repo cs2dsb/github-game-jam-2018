@@ -27,7 +27,7 @@ const SPAWN_VOLUME: f32 = 0.8;
 const EXIT_VOLUME: f32 = 0.6;
 const LIFT_VOLUME: f32 = 0.6;
 const DEATH_VOLUME: f32 = 1.0;
-const EXODUS_VOLUME: f32 = 0.2;
+const EXODUS_VOLUME: f32 = 0.15;
 
 ///Resource containing the sound effects the game uses.
 pub struct Sounds {
